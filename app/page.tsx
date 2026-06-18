@@ -68,6 +68,14 @@ const CREDS = [
   { abbr: "LSS",  label: "Lean Six Sigma", sub: "Applied experience in process optimisation" },
 ];
 
+/* ── TOOLS ───────────────────────────────────────────── */
+const TOOLS = [
+  "Microsoft 365", "Power BI", "Element451", "BambooHR", "Monday.com",
+  "GSP (Proprietary Platform)", "Claude AI", "Zapier", "n8n", "Webhooks & APIs",
+  "JavaScript", "Node.js", "React", "Next.js 14", "Supabase",
+  "Vercel", "Miro", "Visio", "Airtable",
+];
+
 /* ── PROJECTS ────────────────────────────────────────── */
 const PROJECTS = [
   {
@@ -416,8 +424,8 @@ export default function Home() {
             {SERVICES.map((s, i) => (
               <FadeIn key={s.title} delay={i * 80}>
                 <div className="rounded-2xl p-8 h-full transition-all" style={{ background: CARD, border: `1px solid ${BORDER}` }}
-                  onMouseEnter={e => (e.currentTarget.style.borderColor = BLUE)}
-                  onMouseLeave={e => (e.currentTarget.style.borderColor = BORDER)}>
+                  onMouseEnter={e => { e.currentTarget.style.borderColor = BLUE; e.currentTarget.style.boxShadow = `0 0 24px rgba(59,130,246,0.2)`; }}
+                  onMouseLeave={e => { e.currentTarget.style.borderColor = BORDER; e.currentTarget.style.boxShadow = "none"; }}>
                   <div className="text-3xl mb-4">{s.icon}</div>
                   <h3 className="text-xl font-bold text-white mb-3">{s.title}</h3>
                   <p className="text-sm leading-relaxed mb-6" style={{ color: "#94a3b8" }}>{s.description}</p>
@@ -494,8 +502,41 @@ export default function Home() {
         </div>
       </section>
 
+      {/* TOOLS */}
+      <section className="py-20" style={{ background: BG }}>
+        <div className="max-w-7xl mx-auto px-6">
+          <FadeIn>
+            <div className="text-center mb-10">
+              <span className="text-xs font-semibold uppercase tracking-widest" style={{ color: CYAN }}>Tools &amp; Stack</span>
+              <h2 className="text-2xl font-black text-white mt-3 mb-2">The tools I work with</h2>
+              <p className="text-sm" style={{ color: "#94a3b8" }}>I choose tools that fit the problem. These are the platforms I work with most frequently.</p>
+            </div>
+            <div className="flex flex-wrap justify-center gap-3">
+              {TOOLS.map(tool => (
+                <span key={tool} className="px-4 py-2 rounded-full text-sm font-medium transition-all cursor-default"
+                  style={{ background: CARD, border: `1px solid ${BORDER}`, color: "#94a3b8" }}
+                  onMouseEnter={e => {
+                    const el = e.currentTarget as HTMLElement;
+                    el.style.borderColor = BLUE;
+                    el.style.color = CYAN;
+                    el.style.boxShadow = `0 0 12px rgba(59,130,246,0.3)`;
+                  }}
+                  onMouseLeave={e => {
+                    const el = e.currentTarget as HTMLElement;
+                    el.style.borderColor = BORDER;
+                    el.style.color = "#94a3b8";
+                    el.style.boxShadow = "none";
+                  }}>
+                  {tool}
+                </span>
+              ))}
+            </div>
+          </FadeIn>
+        </div>
+      </section>
+
       {/* BUILT & SHIPPED */}
-      <section id="projects" className="py-24" style={{ background: BG }}>
+      <section id="projects" className="py-24" style={{ background: "#050d1a" }}>
         <div className="max-w-7xl mx-auto px-6">
           <FadeIn>
             <div className="mb-12">
@@ -510,8 +551,8 @@ export default function Home() {
             {PROJECTS.map((p, i) => (
               <FadeIn key={p.name} delay={i * 80}>
                 <div className="rounded-2xl p-8 flex flex-col h-full transition-all" style={{ background: CARD, border: `1px solid ${BORDER}` }}
-                  onMouseEnter={e => (e.currentTarget.style.borderColor = BLUE)}
-                  onMouseLeave={e => (e.currentTarget.style.borderColor = BORDER)}>
+                  onMouseEnter={e => { e.currentTarget.style.borderColor = BLUE; e.currentTarget.style.boxShadow = `0 0 24px rgba(59,130,246,0.2)`; }}
+                  onMouseLeave={e => { e.currentTarget.style.borderColor = BORDER; e.currentTarget.style.boxShadow = "none"; }}>
                   <div className="flex items-start justify-between mb-4">
                     <div className="text-3xl">{p.icon}</div>
                     <span className="text-xs font-semibold px-3 py-1 rounded-full" style={{ background: "rgba(59,130,246,0.12)", color: CYAN }}>{p.tag}</span>
@@ -551,8 +592,8 @@ export default function Home() {
             {POSTS.map((p, i) => (
               <FadeIn key={p.title} delay={i * 80}>
                 <div className="rounded-2xl p-8 flex flex-col h-full transition-all" style={{ background: CARD, border: `1px solid ${BORDER}` }}
-                  onMouseEnter={e => (e.currentTarget.style.borderColor = BLUE)}
-                  onMouseLeave={e => (e.currentTarget.style.borderColor = BORDER)}>
+                  onMouseEnter={e => { e.currentTarget.style.borderColor = BLUE; e.currentTarget.style.boxShadow = `0 0 24px rgba(59,130,246,0.2)`; }}
+                  onMouseLeave={e => { e.currentTarget.style.borderColor = BORDER; e.currentTarget.style.boxShadow = "none"; }}>
                   <span className="text-xs font-semibold px-3 py-1 rounded-full self-start mb-4" style={{ background: "rgba(59,130,246,0.12)", color: CYAN }}>{p.tag}</span>
                   <h3 className="font-bold text-base text-white leading-snug mb-3">{p.title}</h3>
                   <p className="text-sm leading-relaxed flex-1" style={{ color: "#94a3b8" }}>{p.excerpt}</p>

@@ -9,12 +9,18 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        navy: "#1F3864",
-        "navy-mid": "#2E5596",
-        "navy-light": "#3A6BC4",
+        ink: "var(--ink)",
+        accent: "var(--accent)",
+        muted: "var(--muted)",
+        surface: "var(--surface)",
+        "surface-alt": "var(--surface-alt)",
+        "surface-ink": "var(--surface-ink)",
+        "accent-soft": "var(--accent-soft)",
       },
       fontFamily: {
-        sans: ["Inter", "system-ui", "sans-serif"],
+        sans: ["var(--font-body)", "system-ui", "sans-serif"],
+        display: ["var(--font-display)", "Georgia", "serif"],
+        mono: ["var(--font-mono)", "ui-monospace", "monospace"],
       },
     },
   },

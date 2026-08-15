@@ -2,32 +2,41 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Dark canvas. Navy base keeps the identity the CV set; clay lifts to carry on
-   a dark ground, where the paper-palette tone was far too dark to read. */
+/* Paper base, alternating with a slightly deeper neutral, so the page has
+   tonal rhythm. --surface-ink stays genuinely dark and is reserved for the
+   two feature sections (AI & Automation, Case Study) — not the whole page. */
 :root {
-  --ink: #f4f1eb; /* headings — warm off-white, not pure white */
-  --accent: #d9835f; /* clay, lifted for dark */
-  --body: #c6ced9;
-  --muted: #97a2b1;
+  --ink: #16283f;
+  --accent: #b4593a; /* clay */
+  --body: #2d2d2d;
+  --muted: #5f5f59;
 
-  --surface: #111823;
-  --surface-alt: #17212e; /* lifted, for alternating sections */
-  --surface-ink: #0b1119; /* deepest, for the two feature sections */
-  --border: #27313f;
-  --border-strong: #3a4655;
+  --surface: #fdfcfa; /* warm */
+  --surface-alt: #f1f1ef; /* cool grey — warm/cool alternation, not beige-on-beige */
+  --surface-ink: #101e33; /* dark, for the two feature sections only */
+  --border: #e0dad0;
+  --border-strong: #cbc3b5;
 
-  --accent-soft: rgba(217, 131, 95, 0.14);
-  /* On a dark ground the body-size clay needs lifting, not deepening. */
-  --accent-deep: #e8a183;
+  --accent-soft: #f3e7e1;
+  /* Clay reaches 4.62:1 on --surface but only 3.86:1 on --surface-alt, so any
+     clay used at body size (links, section numerals) takes the deepened tone. */
+  --accent-deep: #97452a;
   --link: var(--accent-deep);
-  --accent-on-ink: #e8a183;
+  /* Lifted clay, tuned for the dark feature sections only. */
+  --accent-on-ink: #d98b6a;
 
+  /* Used only by the confidence-flow diagram inside the (always-dark) AI
+     section — independent of the light/dark split above. */
   --card: #18212e;
   --card-border: #2c3745;
 
-  --container: 1120px;
-  --container-wide: 1320px;
-  --container-prose: 760px;
+  /* One grid everywhere: 1200px container, 24/40px gutter (mobile/desktop,
+     mirrored by .container-page's own padding-inline below), 12 columns at
+     32px gap wherever a section needs more than one column. No more varying
+     container width per section — every section shares this one. */
+  --container: 1200px;
+  --gutter-mobile: 24px;
+  --gutter-desktop: 40px;
 
   --header-h: 64px;
 }
@@ -64,13 +73,78 @@ h3 {
   box-shadow: 0 1px 3px rgba(22, 40, 63, 0.06);
 }
 
+.wordmark {
+  font-weight: 600;
+  font-size: 0.9375rem;
+  color: var(--ink);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 150ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+.wordmark:hover {
+  border-bottom-color: var(--accent);
+}
+
+/* Nav item: label only, with hover and active (scroll-spy) states. The
+   underline is a shared pseudo-element so hover and active never both try
+   to own the border at once — active always wins when both apply. */
+.nav-link {
+  position: relative;
+  display: inline-block;
+  padding-bottom: 3px;
+  text-decoration: none;
+  cursor: pointer;
+}
+.nav-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -2px;
+  height: 1px;
+  background: var(--border);
+  opacity: 0;
+  transition:
+    opacity 150ms cubic-bezier(0.4, 0, 0.2, 1),
+    background-color 150ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+.nav-link__label {
+  font-size: 0.875rem;
+  color: var(--muted);
+  transition: color 150ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+.nav-link:hover:not([data-active="true"]) .nav-link__label {
+  color: var(--ink);
+}
+.nav-link:hover:not([data-active="true"])::after {
+  opacity: 1;
+  background: var(--border);
+}
+.nav-link:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+.nav-link[data-active="true"] .nav-link__label {
+  color: var(--ink);
+}
+.nav-link[data-active="true"]::after {
+  opacity: 1;
+  background: var(--accent);
+}
+
 body {
   background: var(--surface);
   color: var(--body);
   font-family: var(--font-body), system-ui, sans-serif;
   font-size: 1.0625rem;
   line-height: 1.65;
-  overflow-x: hidden;
+  /* overflow-x: hidden here silently breaks position: sticky for every
+     sticky descendant (profile card, diagram panel, timeline chips) — any
+     non-"visible" overflow on an ancestor changes what sticky resolves its
+     containing block against. overflow-x: clip prevents the same horizontal
+     bleed without that side effect. */
+  overflow-x: clip;
 }
 
 ::selection {
@@ -95,14 +169,6 @@ body {
     max-width: var(--container);
     margin-inline: auto;
     padding-inline: 24px;
-  }
-  /* Varying container width across sections is what stops a long single-page
-     site reading as one monotonous column. */
-  .container-wide {
-    max-width: var(--container-wide);
-  }
-  .container-prose {
-    max-width: var(--container-prose);
   }
   @media (min-width: 768px) {
     .container-page {
@@ -211,57 +277,32 @@ body {
     font-variant-numeric: tabular-nums;
   }
 
-  /* ── Section header: numbered label over a hairline ─── */
+  /* ── Section header: label over a hairline ────────────
+     No numerals — label, hairline, 48px gap, then the H2 that follows in
+     markup (SectionHeading/the section's own h2). */
   .section-head .eyebrow {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding-bottom: 14px;
-    margin-bottom: 22px;
+    padding-bottom: 16px;
+    margin-bottom: 48px;
     border-bottom: 1px solid var(--border);
-  }
-  .section-head .eyebrow .num {
-    font-family: var(--font-mono), ui-monospace, monospace;
-    font-size: 0.8125rem;
-    font-weight: 600;
-    color: var(--accent-deep);
-  }
-  .section-head .eyebrow .num::after {
-    content: "";
-    display: inline-block;
-    width: 24px;
-    height: 1px;
-    background: var(--accent);
-    vertical-align: middle;
-    margin-left: 12px;
   }
   .on-ink .section-head .eyebrow {
     border-bottom-color: rgba(255, 255, 255, 0.14);
   }
-  .on-ink .section-head .eyebrow .num,
-  .on-ink .section-head .eyebrow .num::after {
-    color: var(--accent-on-ink);
-    background-color: var(--accent-on-ink);
-  }
-  .on-ink .section-head .eyebrow .num {
-    background: none;
-  }
 
   /* ── Components ─────────────────────────────────────── */
-  /* On a dark ground, depth comes from a lifted surface rather than shadow. */
+  /* Border only, no shadow — depth comes from the border/background contrast,
+     not elevation. */
   .card {
     display: block;
-    background: var(--card);
-    border: 1px solid var(--card-border);
-    border-radius: 10px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
     transition:
-      background-color 150ms cubic-bezier(0.4, 0, 0.2, 1),
       border-color 150ms cubic-bezier(0.4, 0, 0.2, 1),
       transform 150ms cubic-bezier(0.4, 0, 0.2, 1);
   }
   .card:hover {
     border-color: var(--accent);
-    background: #1d2734;
     transform: translateY(-2px);
   }
 
@@ -281,20 +322,22 @@ body {
       border-color 150ms cubic-bezier(0.4, 0, 0.2, 1);
   }
 
+  /* Clay as a small accent, not a large fill — text and border only, filling
+     on hover rather than by default. */
   .btn-primary {
-    background: var(--accent);
-    color: #10161f;
+    background: transparent;
+    color: var(--accent);
     border: 1px solid var(--accent);
   }
   .btn-primary:hover {
-    background: #e39371;
-    border-color: #e39371;
+    background: var(--accent);
+    color: #fff;
   }
 
   .btn-secondary {
     background: transparent;
     color: var(--ink);
-    border: 1px solid var(--border-strong);
+    border: 1px solid var(--border);
   }
   .btn-secondary:hover {
     border-color: var(--accent);
@@ -326,33 +369,75 @@ body {
     color: var(--ink);
     font-size: 0.8125rem;
     line-height: 1.2;
-    padding: 7px 12px;
+    padding: 8px 14px;
     border-radius: 6px;
   }
-  /* Roomier on touch. Chips are non-interactive labels, so the 44px pointer
-     target minimum does not apply — sizing them as buttons would be a false
-     affordance — but they were tight to read at 30px. */
-  @media (max-width: 767px) {
-    .chip {
-      padding: 10px 14px;
-    }
+
+  /* ── Profile card (About) ──────────────────────────────
+     Credentials + footer, no photo. Short enough now that sticky is worth
+     reinstating — nothing left to fight the height constraint the way the
+     photo used to. */
+  .profile-card {
+    align-self: start;
+    position: sticky;
+    top: 96px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--surface);
+    padding: 28px;
   }
 
-  /* ── Feature sections ───────────────────────────────
-     The whole page is dark now, so these recede to the deepest surface
-     rather than inverting. Text colours already suit the ground. */
+  .profile-card__item + .profile-card__item {
+    border-top: 1px solid var(--border);
+    padding-top: 14px;
+    margin-top: 14px;
+  }
+
+  .profile-card__footer {
+    border-top: 1px solid var(--border);
+    padding-top: 16px;
+    margin-top: 20px;
+  }
+
+  /* ── Feature sections ─────────────────────────────────
+     AI & Automation and Case Study only. Root tokens now mean light-mode
+     colours, so text and borders here are set explicitly rather than
+     inherited — this is the one place on the page that inverts. */
   .on-ink {
     background: var(--surface-ink);
+    color: #c3cedd;
+  }
+  .on-ink .h2,
+  .on-ink .h3,
+  .on-ink .h4 {
+    color: #fff;
+  }
+  .on-ink .label {
+    color: #94a8c2;
+  }
+  .on-ink .lead {
+    color: #c3cedd;
   }
   .on-ink .card {
-    background: #131b26;
-    border-color: #26303d;
+    background: rgba(255, 255, 255, 0.03);
+    border-color: rgba(255, 255, 255, 0.13);
   }
+  .on-ink .card:hover {
+    border-color: var(--accent-on-ink);
+  }
+  .on-ink .chip {
+    background: rgba(217, 139, 106, 0.16);
+    color: #f0ddd4;
+  }
+  .on-ink .prose-link {
+    color: var(--accent-on-ink);
+  }
+  /* Hairlines and muted text inside a dark section. */
   .on-ink .hair {
-    border-color: var(--border) !important;
+    border-color: rgba(255, 255, 255, 0.14) !important;
   }
   .on-ink .dim {
-    color: var(--muted);
+    color: #a6b3c4;
   }
 }
 

@@ -192,6 +192,68 @@ const TOOL_GROUPS = [
   },
 ];
 
+/* ── PLATFORMS & SYSTEMS ───────────────────────────────
+   The headline items — enterprise systems, not small applications. No
+   screenshots exist for these (internal, in some cases pre-dating a UI),
+   so they render as full-width text cards ahead of the application grid. */
+type SystemProject = {
+  name: string;
+  tag: string;
+  description: string;
+  tags: string[];
+  status: string;
+  internalNote?: boolean;
+};
+
+const SYSTEMS: SystemProject[] = [
+  {
+    name: "GSP Platform",
+    tag: "Enterprise platform · Study Now",
+    description:
+      "Built from scratch as the operational system of record for the business, serving both sides: the 500+ partner and agent network on the B2B side, and direct student applicants on the B2C side. Covers admissions, agent onboarding, commissions and compliance. Taken from business requirements and HTML prototypes through external development partner coordination, architecture decisions and acceptance sign-off on every release, then brought in-house by recruiting three software engineers. Now runs nine study destinations across the UK and Europe, each with its own application flow, visa regime and compliance rules on a shared core. Currently architecting the commission engine and rolling out AQF-compliant agent onboarding across 500+ partners.",
+    tags: [
+      "Requirements to production",
+      "Architecture",
+      "Release governance",
+      "Multi-destination",
+      "B2B and B2C",
+      "500+ partners",
+    ],
+    status: "Live — in-house team building next module",
+    internalNote: true,
+  },
+  {
+    name: "Monday.com Operating Infrastructure",
+    tag: "Enterprise implementation · Study Now",
+    description:
+      "Designed and implemented Monday.com as the central operating infrastructure for the business, serving every department rather than a single team. Board architecture, workflow design, automation, permissions and reporting, with 500+ external agents trained onto it. The migration path into GSP was designed from it.",
+    tags: [
+      "Operating model",
+      "Workflow design",
+      "Automation",
+      "500+ agents trained",
+    ],
+    status: "Live",
+    internalNote: true,
+  },
+  {
+    name: "AI Workflow Automation Suite",
+    tag: "Production automation · Study Now",
+    description:
+      "Claude API, Claude Code, MCP, RAG, n8n, Make, Zapier and Power Automate, running across compliance, partner management, financial reconciliation, reporting and lead routing. Zapier acts as the interconnector across the wider tool stack, funnelling inbound leads into Monday.com and keeping systems in sync. Model outputs are constrained to a schema, nothing writes to a record unless a confidence threshold is met, and anything below threshold or above a value limit routes to a human review queue. Recurring patterns get converted into deterministic rules, so the model's surface area shrinks over time.",
+    tags: ["Claude API", "MCP", "RAG", "n8n", "Zapier", "Power Automate"],
+    status: "Live in production",
+  },
+  {
+    name: "Custom Claude Code Skills",
+    tag: "Team tooling",
+    description:
+      "Custom markdown skills authored for Claude Code, used in both CLI and desktop, so repeatable delivery, governance and analysis work runs to a consistent standard across the team rather than depending on one person.",
+    tags: ["Claude Code", "CLI and desktop", "Team standardisation"],
+    status: "In use",
+  },
+];
+
 /* ── PROJECTS ────────────────────────────────────────── */
 type Project = {
   name: string;
@@ -259,7 +321,7 @@ const PROJECTS: Project[] = [
 
 /* ── CASE STUDY ──────────────────────────────────────── */
 const CASE_BUILT = [
-  "Excel to Monday.com migration — first operational platform, 500+ agents trained",
+  "Monday.com implemented as central operating infrastructure — replaced Excel, every department, 500+ agents trained",
   "Proprietary GSP admissions platform — business requirements to live production",
   "Google Workspace to Microsoft 365 — full enterprise migration, zero critical downtime",
   "BambooHR implementation — 100+ person workforce, full audit readiness",
@@ -330,11 +392,19 @@ function Reveal({
       return r.top < window.innerHeight && r.bottom > 0;
     };
 
+    const reduceMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+
     // IntersectionObserver does not fire while the document is not being
     // rendered — a background tab, which is how most CV links get opened.
-    // Anything already in the viewport is revealed on a timer instead, so
-    // the page can never paint blank.
-    if (typeof IntersectionObserver === "undefined" || inViewport()) {
+    // Anything already in the viewport (or reduced motion) is revealed on a
+    // timer instead, so the page can never paint blank.
+    if (
+      reduceMotion ||
+      typeof IntersectionObserver === "undefined" ||
+      inViewport()
+    ) {
       const t = setTimeout(() => setVisible(true), 0);
       return () => clearTimeout(t);
     }
@@ -343,6 +413,10 @@ function Reveal({
       ([entry]) => {
         if (!entry.isIntersecting) return;
         setVisible(true);
+        // One-shot entrance, not a repeating scroll effect — stop watching
+        // the instant it has fired once, so scrolling back up and down
+        // never re-triggers it.
+        obs.unobserve(entry.target);
         obs.disconnect();
       },
       { threshold: 0.15, rootMargin: "0px 0px -80px 0px" },
@@ -377,57 +451,36 @@ function StatCard({
   stat: (typeof STATS)[number];
   index: number;
 }) {
-  const ref = useRef<HTMLDivElement>(null);
   // Final value is the initial render, so the correct number is on screen
-  // even if JS, the observer, or the animation never runs.
+  // even if JS or the animation never runs.
   const [display, setDisplay] = useState(() =>
     formatStat(stat.value, stat.decimals),
   );
 
+  // These stats now live in the hero, always above the fold — the count-up
+  // runs once on mount rather than waiting on a scroll observer.
   useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    if (
-      typeof IntersectionObserver === "undefined" ||
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches
-    ) {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       return;
     }
 
     let raf = 0;
-    const obs = new IntersectionObserver(
-      ([entry]) => {
-        if (!entry.isIntersecting) return;
-        obs.disconnect();
-        const start = performance.now();
-        const duration = 1100;
-        const tick = (now: number) => {
-          const t = Math.min(1, (now - start) / duration);
-          const eased = 1 - Math.pow(1 - t, 3);
-          setDisplay(formatStat(stat.value * eased, stat.decimals));
-          if (t < 1) raf = requestAnimationFrame(tick);
-        };
-        raf = requestAnimationFrame(tick);
-      },
-      { threshold: 0.15 },
-    );
-    obs.observe(el);
-    return () => {
-      obs.disconnect();
-      cancelAnimationFrame(raf);
+    const start = performance.now();
+    const duration = 1100;
+    const tick = (now: number) => {
+      const t = Math.min(1, (now - start) / duration);
+      const eased = 1 - Math.pow(1 - t, 3);
+      setDisplay(formatStat(stat.value * eased, stat.decimals));
+      if (t < 1) raf = requestAnimationFrame(tick);
     };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
   }, [stat.value, stat.decimals]);
 
   return (
-    <div
-      ref={ref}
-      // Top rule on every item reads as one continuous line across the row;
-      // vertical hairlines (desktop only) turn four floating numbers into a band.
-      className={[
-        "pt-7 border-t border-t-[color:var(--border-strong)] lg:px-7",
-        index === 0 ? "lg:pl-0" : "lg:border-l lg:border-l-[color:var(--border)]",
-      ].join(" ")}
-    >
+    // Hairline between items comes from the container's divide-y; this just
+    // supplies the 32px gap on top of it (first item gets none).
+    <div className={index === 0 ? "" : "lg:pt-8"}>
       {/* min-height reserves space so the counter cannot shift layout */}
       <div
         className="mono text-[2rem] md:text-[2.375rem] font-semibold leading-none tracking-tight"
@@ -437,7 +490,7 @@ function StatCard({
         {display}
         {stat.suffix}
       </div>
-      <p className="small mt-3 max-w-[24ch]" style={{ color: "var(--muted)" }}>
+      <p className="small mt-4 max-w-[24ch]" style={{ color: "var(--muted)" }}>
         {stat.label}
       </p>
     </div>
@@ -446,26 +499,49 @@ function StatCard({
 
 /* ── SECTION HEADER ──────────────────────────────────── */
 function SectionHead({
-  num,
   label,
   heading,
   intro,
 }: {
-  num: string;
   label: string;
   heading: string;
   intro?: React.ReactNode;
 }) {
   return (
     <div className="section-head">
+      <SectionEyebrow label={label} />
+      <SectionHeading heading={heading} intro={intro} />
+    </div>
+  );
+}
+
+/* Split out so sections with a narrow intro column (Enablement, AI, Case
+   Study) can render the hairline full-width across the section while the
+   heading/intro text stays in the narrower column beneath it — otherwise the
+   rule is only as wide as the intro column, not the section's content span. */
+function SectionEyebrow({ label }: { label: string }) {
+  return (
+    <div className="section-head">
       <div className="eyebrow">
-        <span className="num">{num}</span>
         <span className="label">{label}</span>
       </div>
+    </div>
+  );
+}
+
+function SectionHeading({
+  heading,
+  intro,
+}: {
+  heading: string;
+  intro?: React.ReactNode;
+}) {
+  return (
+    <div className="section-head">
       <h2 className="h2 max-w-[22ch]">{heading}</h2>
       {/* Colour comes from CSS so the .on-ink override can win — an inline
           style here would beat it and leave dark text on the dark section. */}
-      {intro && <p className="lead intro mt-5 prose-col">{intro}</p>}
+      {intro && <p className="lead intro mt-6 prose-col">{intro}</p>}
     </div>
   );
 }
@@ -486,7 +562,7 @@ function FlowNode({
     tone === "pass" ? "#7FD8A4" : tone === "hold" ? "#E8B96B" : "var(--accent-on-ink)";
   return (
     <div
-      className="rounded-[10px] p-4 flex-1 min-w-0"
+      className="rounded-xl p-4 flex-1 min-w-0"
       style={{
         background: "var(--card)",
         border: "1px solid var(--card-border)",
@@ -494,7 +570,7 @@ function FlowNode({
       }}
     >
       <div
-        className="mono text-[0.6875rem] uppercase tracking-[0.08em] mb-1.5"
+        className="mono text-[0.6875rem] uppercase tracking-[0.08em] mb-2"
         style={{ color: accentColour }}
       >
         {step}
@@ -503,7 +579,7 @@ function FlowNode({
         {title}
       </div>
       {note && (
-        <div className="text-[0.8125rem] mt-1 leading-snug" style={{ color: "var(--muted)" }}>
+        <div className="text-[0.8125rem] mt-1 leading-snug dim">
           {note}
         </div>
       )}
@@ -514,15 +590,17 @@ function FlowNode({
 function ConfidenceFlow() {
   return (
     <div
-      className="rounded-[10px] p-6 md:p-8"
+      className="rounded-xl p-6 md:p-8"
       style={{
         background: "rgba(255,255,255,0.02)",
-        border: "1px solid var(--border)",
+        border: "1px solid rgba(255,255,255,0.14)",
       }}
     >
-      <div className="label mb-6">How a record actually gets written</div>
+      <div className="label mb-6" style={{ color: "#94a8c2" }}>
+        How a record actually gets written
+      </div>
 
-      <div className="flex flex-col lg:flex-row gap-3 lg:items-stretch">
+      <div className="flex flex-col lg:flex-row gap-4 lg:items-stretch">
         <FlowNode step="01" title="Model output" note="Claude via API" />
         <FlowNode
           step="02"
@@ -536,7 +614,7 @@ function ConfidenceFlow() {
         />
       </div>
 
-      <div className="flex flex-col md:flex-row gap-3 mt-3">
+      <div className="flex flex-col md:flex-row gap-4 mt-4">
         <FlowNode
           step="Pass"
           title="Writes to record"
@@ -551,7 +629,7 @@ function ConfidenceFlow() {
         />
       </div>
 
-      <p className="small mt-6" style={{ color: "var(--muted)" }}>
+      <p className="small mt-6 dim">
         The model&rsquo;s surface area shrinks over time, because every pattern I
         see twice stops being a model decision.
       </p>
@@ -562,11 +640,36 @@ function ConfidenceFlow() {
 /* ── HEADER ──────────────────────────────────────────── */
 function SiteHeader() {
   const [scrolled, setScrolled] = useState(false);
+  const [active, setActive] = useState("");
+
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  // Scroll spy: a thin band across the vertical middle of the viewport
+  // (rootMargin shrinks the observed area to 40–45% down) decides which
+  // section is "current," rather than the top of the viewport — a section
+  // reaching the middle feels like the reader's actual position.
+  useEffect(() => {
+    if (typeof IntersectionObserver === "undefined") return;
+    const targets = NAV_LINKS.map((l) => document.getElementById(l.href.slice(1))).filter(
+      (el): el is HTMLElement => el !== null,
+    );
+    if (!targets.length) return;
+
+    const obs = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) setActive(entry.target.id);
+        });
+      },
+      { rootMargin: "-40% 0px -55% 0px" },
+    );
+    targets.forEach((el) => obs.observe(el));
+    return () => obs.disconnect();
   }, []);
 
   return (
@@ -576,11 +679,7 @@ function SiteHeader() {
       data-scrolled={scrolled ? "true" : "false"}
     >
       <div className="container-page h-full flex items-center justify-between gap-8">
-        <a
-          href="#top"
-          className="font-semibold text-[0.9375rem]"
-          style={{ color: "var(--ink)" }}
-        >
+        <a href="#top" className="wordmark" aria-label="Back to top">
           Basit Azeez
         </a>
         <nav aria-label="Sections" className="flex items-center gap-6">
@@ -588,10 +687,10 @@ function SiteHeader() {
             <a
               key={l.href}
               href={l.href}
-              className="text-[0.875rem] transition-colors hover:text-[color:var(--ink)]"
-              style={{ color: "var(--muted)" }}
+              className="nav-link"
+              data-active={active === l.href.slice(1) ? "true" : "false"}
             >
-              {l.label}
+              <span className="nav-link__label">{l.label}</span>
             </a>
           ))}
         </nav>
@@ -628,30 +727,103 @@ function BackToTop() {
   );
 }
 
+/* ── GRID OVERLAY (temporary — remove before shipping) ──
+   Verification aid for the site-wide 12-column grid. Ctrl/Cmd+G toggles it.
+   Not gated behind NODE_ENV: the preview build this is checked against runs
+   `next start` (production mode), so an env gate would hide it from the one
+   place it's actually needed. Strip this whole component once alignment is
+   confirmed at 1440/1024/390px. */
+function GridOverlay() {
+  const [show, setShow] = useState(false);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "g") {
+        e.preventDefault();
+        setShow((s) => !s);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
+  if (!show) return null;
+
+  return (
+    <div className="fixed inset-0 z-[9999] pointer-events-none" aria-hidden="true">
+      {/* 8px baseline grid */}
+      <div
+        className="absolute inset-0"
+        style={{
+          backgroundImage:
+            "repeating-linear-gradient(to bottom, rgba(180,89,58,0.2) 0px, rgba(180,89,58,0.2) 1px, transparent 1px, transparent 8px)",
+        }}
+      />
+      {/* Container edges — visible at every breakpoint */}
+      <div className="container-page h-full relative">
+        <div
+          className="absolute inset-y-0 left-0 w-px"
+          style={{ background: "rgba(180,89,58,0.5)" }}
+        />
+        <div
+          className="absolute inset-y-0 right-0 w-px"
+          style={{ background: "rgba(180,89,58,0.5)" }}
+        />
+        {/* 12 columns, lg+ only — matches every section's grid exactly */}
+        <div className="hidden lg:grid lg:grid-cols-12 lg:gap-x-8 h-full">
+          {Array.from({ length: 12 }).map((_, i) => (
+            <div
+              key={i}
+              className="h-full"
+              style={{ background: "rgba(180,89,58,0.14)" }}
+            />
+          ))}
+        </div>
+      </div>
+
+      <div
+        className="fixed bottom-4 left-4 mono text-[0.6875rem] px-3 py-2 rounded-lg"
+        style={{ background: "#101e33", color: "#fff" }}
+      >
+        Grid overlay on — Ctrl/Cmd+G to hide
+      </div>
+    </div>
+  );
+}
+
 /* ── PAGE ────────────────────────────────────────────── */
 export default function Home() {
   return (
     <>
       <SiteHeader />
       <BackToTop />
+      <GridOverlay />
 
       <main id="top" className="md:pt-[var(--header-h)]">
         {/* ── HERO ─────────────────────────────────────── */}
+        {/* md:pt-[72px] overrides just the top of .section's padding-block
+            (88px at desktop) — Tailwind's utility layer beats the components
+            layer regardless of source order, so only the top changes; the
+            bottom padding stays whatever .section already sets. Closes the
+            nav-to-eyebrow gap from ~100px to the requested 72px without
+            touching every other section's spacing. */}
         <section
-          className="section"
+          className="section md:pt-[72px]"
           style={{ background: "var(--surface)" }}
         >
           <div className="container-page">
-            {/* items-stretch so the portrait column ends level with the copy
-                instead of leaving a dead block beneath it. */}
-            <div className="grid lg:grid-cols-[1.45fr_1fr] gap-12 lg:gap-16 items-stretch">
-              <div>
-                <div className="rise">
-                  <span className="label">Operations and delivery leader</span>
-                </div>
+            <div className="rise">
+              <span className="label">Operations and delivery leader</span>
+            </div>
 
+            {/* items-start so the stat stack's top lands with the headline's
+                top, not the section's — the stats fill what used to be an
+                empty right column instead of sitting in their own band.
+                Cols 1–7 content, cols 9–12 stats, col 8 the grid's own gutter. */}
+            <div className="grid lg:grid-cols-12 lg:gap-x-8 items-start mt-4">
+              <div className="lg:col-start-1 lg:col-span-7">
                 <h1
-                  className="display rise mt-4 text-balance"
+                  className="display rise text-balance"
                   style={{ animationDelay: "60ms" }}
                 >
                   I build the systems that let organisations scale, and then I
@@ -659,7 +831,7 @@ export default function Home() {
                 </h1>
 
                 <p
-                  className="lead rise mt-7 prose-col"
+                  className="lead rise mt-8 prose-col"
                   style={{ color: "var(--muted)", animationDelay: "120ms" }}
                 >
                   Most businesses outgrow their systems before they notice. I
@@ -670,7 +842,7 @@ export default function Home() {
                 </p>
 
                 <div
-                  className="flex flex-col sm:flex-row flex-wrap gap-3 mt-9 rise"
+                  className="flex flex-col sm:flex-row flex-wrap gap-4 mt-8 rise"
                   style={{ animationDelay: "180ms" }}
                 >
                   <a href="#projects" className="btn btn-primary">
@@ -687,10 +859,18 @@ export default function Home() {
                     Download CV
                     <span aria-hidden="true">↓</span>
                   </a>
-                  <a href="#principles" className="btn btn-secondary">
+                </div>
+
+                {/* Demoted from a third equal-weight button — it doesn't need
+                    to compete with the two real CTAs. */}
+                <p className="rise mt-4" style={{ animationDelay: "195ms" }}>
+                  <a
+                    href="#principles"
+                    className="prose-link small font-medium"
+                  >
                     How I work
                   </a>
-                </div>
+                </p>
 
                 {/* A screening fact — cheaper to answer here than in a first call. */}
                 <p
@@ -702,35 +882,16 @@ export default function Home() {
                 </p>
               </div>
 
-              {/* Portrait — a face early is worth more to a hiring manager than
-                  the empty column it replaces. */}
+              {/* Stat stack — 2x2 on mobile, a single vertical column with
+                  hairline dividers on desktop. */}
               <div
-                className="rise hidden lg:flex items-end justify-end"
+                className="rise grid grid-cols-2 lg:grid-cols-1 lg:col-start-9 lg:col-span-4 gap-x-6 gap-y-8 lg:gap-y-0 lg:divide-y lg:divide-[color:var(--border)]"
                 style={{ animationDelay: "150ms" }}
               >
-                <img
-                  src="/headshot.webp"
-                  alt="Basit Adekunle Azeez"
-                  width={290}
-                  height={363}
-                  fetchPriority="high"
-                  className="w-full max-w-[300px] rounded-xl object-cover object-top"
-                  style={{
-                    aspectRatio: "290 / 363",
-                    border: "1px solid var(--border)",
-                    boxShadow: "0 18px 40px -24px rgba(0,0,0,0.55)",
-                  }}
-                />
+                {STATS.map((s, i) => (
+                  <StatCard key={s.label} stat={s} index={i} />
+                ))}
               </div>
-            </div>
-
-            <div
-              className="grid grid-cols-2 lg:grid-cols-4 gap-x-6 lg:gap-x-0 gap-y-8 mt-16 rise"
-              style={{ animationDelay: "240ms" }}
-            >
-              {STATS.map((s, i) => (
-                <StatCard key={s.label} stat={s} index={i} />
-              ))}
             </div>
           </div>
         </section>
@@ -741,13 +902,21 @@ export default function Home() {
           className="section"
           style={{ background: "var(--surface-alt)" }}
         >
-          <div className="container-page grid lg:grid-cols-[1fr_320px] gap-16 lg:gap-20 items-start">
-            <div>
-              <Reveal>
-                <SectionHead
-                  num="01"
-                label="About"
+          <div className="container-page grid lg:grid-cols-12 lg:gap-x-8">
+            {/* Eyebrow full width so the hairline spans the whole section,
+                same fix applied to Enablement/AI/Case Study. */}
+            <Reveal className="lg:col-span-12">
+              <SectionEyebrow label="About" />
+            </Reveal>
+
+            <div className="lg:col-span-12 grid lg:grid-cols-12 lg:gap-x-8 items-start">
+            {/* Cols 1–5 — the profile card now takes 7–12, so the prose
+                narrows to match (mirrors the AI section's 1–5/7–12 split). */}
+            <div className="lg:col-start-1 lg:col-span-5">
+              <Reveal delay={30}>
+                <SectionHeading
                   heading="I build the systems that let ambitious organisations actually scale."
+                  intro="Six years across international education, high-growth consumer tech and consultancy. Trained as an architect first."
                 />
               </Reveal>
               <Reveal delay={60}>
@@ -757,109 +926,68 @@ export default function Home() {
                     operated in two markets does not scale to seven. The tools
                     that worked when everyone sat together break down across
                     time zones. The processes that felt fine at 20 people become
-                    the constraint at 70.
+                    the constraint at 100.
                   </p>
                   <p>
-                    My background is not a conventional operations path. I
-                    trained as an architect: five years on a BTech in
-                    Architecture in Nigeria, then a Masters in Architectural and
-                    Cultural Heritage at Hochschule Anhalt in Germany.
-                    Architecture teaches you how systems fit together, how
-                    constraints shape what is possible, and how to turn an
-                    abstract requirement into something buildable. That instinct
-                    never left.
-                  </p>
-                  <p>
-                    The pivot came at Getir, supporting rapid expansion into the
-                    German market during one of the fastest scaling periods in
-                    European tech. Then Development Hub Consulting, leading the
-                    operational and systems setup for a marketplace platform
-                    launch. Both confirmed the same thing: the most valuable
-                    skill in a growing organisation is turning an undefined
-                    situation into something that works reliably at scale.
-                  </p>
-                  <p>
-                    I joined Study Now when it ran two countries on
-                    spreadsheets. I built the technology and business systems
-                    function from nothing: four enterprise platform migrations,
-                    a proprietary admissions platform from requirements to
-                    production, an AI automation layer across compliance,
-                    partner management and finance, and the reporting the
-                    leadership team now runs on. I also stood up the support
-                    department from scratch — hiring it, leading it, and
-                    defining the OKRs and KPIs it is measured on. Seven
-                    countries, 1,500+ annual enrolments, a team of 20, and a
-                    £500k+ budget. The systems never became the bottleneck.
+                    I trained as an architect in Nigeria and Germany before
+                    moving into operations, which is where the instinct for how
+                    systems fit together comes from. I pivoted at Getir during
+                    its German expansion, then led the operational and systems
+                    setup for a marketplace launch at Development Hub
+                    Consulting. I joined Study Now when it ran two countries on
+                    spreadsheets and built the technology and business systems
+                    function from nothing: four enterprise migrations, a
+                    proprietary admissions platform from requirements to
+                    production, an AI automation layer, and the reporting the
+                    leadership team now runs on. Seven countries, 1,500+ annual
+                    enrolments, a team of 20, a £500k+ budget, and the systems
+                    never became the bottleneck.
                   </p>
                 </div>
               </Reveal>
             </div>
 
-            {/* Sticky so the card travels with the reader instead of leaving a
-                dead column beside the last two paragraphs. */}
-            <Reveal delay={120} className="lg:sticky lg:top-[calc(var(--header-h)+24px)]">
-              <div>
-                {/* Portrait lives in the hero on desktop; shown here on the
-                    narrow layout where the hero is single-column. */}
-                <img
-                  src="/headshot.webp"
-                  alt="Basit Adekunle Azeez"
-                  width={409}
-                  height={550}
-                  loading="lazy"
-                  decoding="async"
-                  className="lg:hidden w-32 h-32 rounded-xl object-cover object-top mb-10"
-                  style={{ border: "1px solid var(--border)" }}
-                />
+            {/* One card, not two — photo, credentials, footer, nothing else.
+                No photo — the card is credentials + footer only now, short
+                enough that sticky is worth reinstating (see .profile-card in
+                globals.css). */}
+            <Reveal delay={120} className="lg:col-start-7 lg:col-span-6">
+              <div className="profile-card">
+                <span className="label">Credentials</span>
+                <ul className="mt-6">
+                  {CREDS.map((c) => (
+                    <li key={c.label} className="profile-card__item">
+                      <div className="h4">{c.label}</div>
+                      <div
+                        className="text-[0.8125rem] leading-snug mt-0.5"
+                        style={{ color: "var(--muted)" }}
+                      >
+                        {c.sub}
+                      </div>
+                    </li>
+                  ))}
+                </ul>
 
                 <div
-                  className="p-6 rounded-[10px]"
-                  style={{
-                    background: "var(--surface)",
-                    border: "1px solid var(--border)",
-                  }}
+                  className="profile-card__footer small"
+                  style={{ color: "var(--muted)" }}
                 >
-                  <span className="label">Credentials</span>
-                  <ul className="mt-5 space-y-4">
-                    {CREDS.map((c) => (
-                      <li
-                        key={c.label}
-                        className="pb-4 last:pb-0 border-b border-b-[color:var(--border)] last:border-b-0"
-                      >
-                        <div className="h4">{c.label}</div>
-                        <div
-                          className="text-[0.8125rem] leading-snug mt-0.5"
-                          style={{ color: "var(--muted)" }}
-                        >
-                          {c.sub}
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
-
-                  <div
-                    className="mt-6 pt-5 small"
-                    style={{
-                      borderTop: "1px solid var(--border)",
-                      color: "var(--muted)",
-                    }}
-                  >
-                    London, UK · Right to work in the UK to 2030, no
-                    sponsorship required
-                    <div className="mt-2">
-                      <a
-                        href="https://linkedin.com/in/basitadekunle"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="prose-link"
-                      >
-                        LinkedIn
-                      </a>
-                    </div>
+                  London, UK · Right to work in the UK to 2030, no
+                  sponsorship required
+                  <div className="mt-2">
+                    <a
+                      href="https://linkedin.com/in/basitadekunle"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="prose-link"
+                    >
+                      LinkedIn
+                    </a>
                   </div>
                 </div>
               </div>
             </Reveal>
+            </div>
           </div>
         </section>
 
@@ -870,12 +998,11 @@ export default function Home() {
           style={{ background: "var(--surface)" }}
         >
           {/* Centred so the space sits on both sides — this section is meant to
-              read as a deliberate pause, and symmetry earns that. */}
-          <div className="container-page">
-            <div className="mx-auto" style={{ maxWidth: "860px" }}>
+              read as a deliberate pause, and symmetry earns that. Cols 3–10. */}
+          <div className="container-page grid lg:grid-cols-12">
+            <div className="lg:col-start-3 lg:col-span-8">
             <Reveal>
               <SectionHead
-                num="02"
                 label="Operating principles"
                 heading="How I think about this work"
                 intro="Seven things I have learned the hard way. They explain most of the decisions I make."
@@ -890,7 +1017,7 @@ export default function Home() {
                   delay={i * 60}
                   className="py-6 border-b border-b-[color:var(--border)] last:border-b-0"
                 >
-                  <div className="flex gap-5 md:gap-8">
+                  <div className="flex gap-6 md:gap-8">
                     <span
                       className="shrink-0 leading-none select-none"
                       style={{
@@ -912,7 +1039,7 @@ export default function Home() {
                         {p.title}
                       </h3>
                       <p
-                        className="mt-2.5 leading-[1.7]"
+                        className="mt-2 leading-[1.7]"
                         style={{ color: "var(--muted)" }}
                       >
                         {p.body}
@@ -932,29 +1059,38 @@ export default function Home() {
           className="section"
           style={{ background: "var(--surface-alt)" }}
         >
-          <div className="container-page">
-            {/* Proof sits beside the intro rather than below the four blocks —
-                it fills the empty right column and front-loads the evidence. */}
-            <div className="grid lg:grid-cols-[1.15fr_1fr] gap-10 lg:gap-14 items-center">
-              <Reveal>
-                <SectionHead
-                  num="03"
-                  label="Enablement & adoption"
+          <div className="container-page grid lg:grid-cols-12 lg:gap-x-8">
+            {/* Eyebrow full width (col 1–12) so its hairline spans the whole
+                section, not just the intro column. */}
+            <Reveal className="lg:col-span-12">
+              <SectionEyebrow label="Enablement & adoption" />
+            </Reveal>
+
+            {/* Heading cols 1–6, callout cols 7–12 — every right-hand element
+                in the site starts on column 7, not 8 or 9. Proof sits beside
+                the intro rather than below the four blocks: it fills the
+                empty right column and front-loads the evidence. */}
+            <div className="lg:col-span-12 grid lg:grid-cols-12 lg:gap-x-8 items-start">
+              <Reveal className="lg:col-start-1 lg:col-span-6">
+                <SectionHeading
                   heading="The part most transformations skip"
                   intro="Most technology change fails after go-live, not before it. The system works, the training happened, and six months later people are back in the spreadsheet. Adoption is the part I am most interested in, and the part I measure."
                 />
               </Reveal>
 
-              <Reveal delay={60}>
+              <Reveal
+                delay={60}
+                className="lg:col-start-7 lg:col-span-6 lg:sticky lg:top-[96px] lg:self-start"
+              >
                 <div
-                  className="rounded-[10px] p-6 md:p-7"
+                  className="rounded-xl p-8"
                   style={{
                     background: "var(--accent-soft)",
                     borderLeft: "2px solid var(--accent)",
                   }}
                 >
                   <span className="label">In practice</span>
-                  <p className="small mt-3" style={{ color: "var(--body)" }}>
+                  <p className="small mt-4" style={{ color: "var(--body)" }}>
                     Four enterprise platform migrations across 7 countries —
                     Excel to Monday.com with 500+ agents trained, Google
                     Workspace to Microsoft 365 with zero critical downtime,
@@ -966,7 +1102,7 @@ export default function Home() {
               </Reveal>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-x-10 gap-y-9 mt-12">
+            <div className="lg:col-span-12 grid md:grid-cols-2 gap-x-8 gap-y-8 mt-12">
               {ENABLEMENT.map((e, i) => (
                 <Reveal key={e.title} delay={i * 60}>
                   <div
@@ -974,7 +1110,7 @@ export default function Home() {
                     style={{ borderTop: "1px solid var(--border)" }}
                   >
                     <h3 className="h4 text-[1.125rem]">{e.title}</h3>
-                    <p className="mt-3 small" style={{ color: "var(--muted)" }}>
+                    <p className="mt-4 small" style={{ color: "var(--muted)" }}>
                       {e.body}
                     </p>
                   </div>
@@ -987,34 +1123,39 @@ export default function Home() {
 
         {/* ── AI & AUTOMATION ──────────────────────────── */}
         <section id="ai" className="section on-ink">
-          <div className="container-page">
-            <Reveal>
-              <SectionHead
-                num="04"
-                label="AI & automation"
+          <div className="container-page grid lg:grid-cols-12 lg:gap-x-8">
+            {/* Eyebrow full width so the hairline spans the whole section. */}
+            <Reveal className="lg:col-span-12">
+              <SectionEyebrow label="AI & automation" />
+            </Reveal>
+            <Reveal className="lg:col-start-1 lg:col-span-6">
+              <SectionHeading
                 heading="AI, specifically"
                 intro="I build with AI rather than talk about it, and I am precise about what that means. Here is the actual scope."
               />
             </Reveal>
 
-            <div className="grid lg:grid-cols-2 gap-x-12 gap-y-9 mt-12 items-start">
-              <div className="space-y-8">
+            {/* Left text cols 1–5, diagram cols 7–12 — col 6 is the grid's
+                own gutter, giving the diagram room to breathe. */}
+            <div className="lg:col-span-12 grid lg:grid-cols-12 lg:gap-x-8 gap-y-8 mt-12 items-start">
+              <div className="lg:col-start-1 lg:col-span-5 space-y-8">
                 {AI_BLOCKS.map((b, i) => (
                   <Reveal key={b.title} delay={i * 60}>
                     <div
-                      className="pt-5"
+                      className="pt-6 hair"
                       style={{ borderTop: "1px solid var(--border)" }}
                     >
                       <h3 className="h4 text-[1.125rem]">{b.title}</h3>
-                      <p className="mt-3 small" style={{ color: "var(--muted)" }}>
-                        {b.body}
-                      </p>
+                      <p className="mt-4 small dim">{b.body}</p>
                     </div>
                   </Reveal>
                 ))}
               </div>
 
-              <Reveal delay={120} className="lg:sticky lg:top-[104px]">
+              <Reveal
+                delay={120}
+                className="lg:col-start-7 lg:col-span-6 lg:sticky lg:top-[96px] lg:self-start"
+              >
                 <ConfidenceFlow />
               </Reveal>
             </div>
@@ -1029,31 +1170,82 @@ export default function Home() {
         >
           {/* Intro stays contained; the grid breaks wider. The width change is
               what creates rhythm down a long single-page site. */}
-          <div className="container-page">
-            {/* Heading left, intro right — fills the width instead of leaving
-                half the row empty. */}
-            <Reveal>
-              <div className="grid lg:grid-cols-[1.1fr_1fr] gap-8 lg:gap-14 items-end">
-                <div className="section-head">
-                  <div className="eyebrow">
-                    <span className="num">05</span>
-                    <span className="label">Built &amp; shipped</span>
-                  </div>
-                  <h2 className="h2 max-w-[16ch]">
-                    Products I have built from scratch
-                  </h2>
-                </div>
-                <p className="lead" style={{ color: "var(--muted)" }}>
-                  Identifying the problem is half the job. When no tool exists,
-                  or the ones that do are wrong, I build. These are shipped and
-                  in use.
-                </p>
-              </div>
+          <div className="container-page grid lg:grid-cols-12">
+            <Reveal className="lg:col-start-1 lg:col-span-7">
+              <SectionHead
+                label="Built & shipped"
+                heading="Products I have built from scratch"
+                intro="Identifying the problem is half the job. When no tool exists, or the ones that do are wrong, I build. These are shipped and in use."
+              />
             </Reveal>
           </div>
 
-          <div className="container-page container-wide">
-            <div className="grid md:grid-cols-2 gap-5 mt-12">
+          <div className="container-page">
+            {/* Group 1 — the headline items. Full-width and text-led, since
+                these are the largest things built and no screenshots exist
+                for internal enterprise systems. */}
+            <Reveal>
+              <div className="label mt-16">Platforms &amp; systems</div>
+            </Reveal>
+
+            <div className="flex flex-col gap-6 mt-8">
+              {SYSTEMS.map((s, i) => (
+                <Reveal key={s.name} delay={i * 60}>
+                  {/* Two columns inside the card — at this card width a
+                      single text column left ~400px of dead space on the
+                      right. Left cols 1–7 (label/title/description), right
+                      cols 9–12 (tags stacked, then status, then the
+                      internal-only note), both top-aligned. */}
+                  <div className="card p-8">
+                    <div className="grid lg:grid-cols-12 lg:gap-x-12 items-start">
+                      <div className="lg:col-start-1 lg:col-span-7">
+                        <span className="label">{s.tag}</span>
+                        <h3
+                          className="mt-4 text-[1.5rem] md:text-[1.75rem] font-semibold leading-snug"
+                          style={{ color: "var(--ink)" }}
+                        >
+                          {s.name}
+                        </h3>
+                        <p className="mt-4" style={{ color: "var(--body)" }}>
+                          {s.description}
+                        </p>
+                      </div>
+
+                      <div className="lg:col-start-9 lg:col-span-4 mt-6 lg:mt-0">
+                        <div className="flex flex-col gap-2">
+                          {s.tags.map((t) => (
+                            <span key={t} className="chip w-fit">
+                              {t}
+                            </span>
+                          ))}
+                        </div>
+                        <div
+                          className="small font-medium mt-4"
+                          style={{ color: "var(--ink)" }}
+                        >
+                          {s.status}
+                        </div>
+                        {s.internalNote && (
+                          <div
+                            className="small mt-2"
+                            style={{ color: "var(--muted)" }}
+                          >
+                            Internal — walkthrough available on request
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </Reveal>
+              ))}
+            </div>
+
+            {/* Group 2 — the existing application grid, unchanged. */}
+            <Reveal>
+              <div className="label mt-16">Applications</div>
+            </Reveal>
+
+            <div className="grid md:grid-cols-2 gap-6 mt-8 items-stretch">
               {PROJECTS.map((p, i) => (
                 <Reveal key={p.name} delay={i * 60}>
                   <div className="card overflow-hidden flex flex-col h-full">
@@ -1078,11 +1270,11 @@ export default function Home() {
                         />
                       </div>
                     )}
-                    <div className="p-7 flex flex-col flex-1">
+                    <div className="p-8 flex flex-col flex-1">
                     <span className="label">{p.tag}</span>
-                    <h3 className="h3 mt-3">{p.name}</h3>
+                    <h3 className="h3 mt-4">{p.name}</h3>
                     <p
-                      className="small mt-3 flex-1"
+                      className="small mt-4 flex-1"
                       style={{ color: "var(--muted)" }}
                     >
                       {p.description}
@@ -1127,26 +1319,33 @@ export default function Home() {
         {/* ── CASE STUDY ───────────────────────────────── */}
         {/* Second dark section — one alone made AI feel alive and nothing else. */}
         <section id="work" className="section on-ink">
-          <div className="container-page container-wide">
+          <div className="container-page grid lg:grid-cols-12 lg:gap-x-8">
+            {/* Eyebrow full width so the hairline spans the whole section. */}
+            <Reveal className="lg:col-span-12">
+              <SectionEyebrow label="Case study" />
+            </Reveal>
+
             {/* Timeline sits beside the intro: it is the visual element and
-                belongs at the top, not stranded underneath. */}
-            <div className="grid lg:grid-cols-[1fr_1fr] gap-10 lg:gap-14 items-center">
-              <Reveal>
-                <SectionHead
-                  num="06"
-                  label="Case study"
+                belongs at the top, not stranded underneath. Heading cols 1–6,
+                timeline cols 7–12 — every right-hand element in the site
+                starts on column 7, sticky since it's the shorter block. */}
+            <div className="lg:col-span-12 grid lg:grid-cols-12 lg:gap-x-8 items-start">
+              <Reveal className="lg:col-start-1 lg:col-span-6">
+                <SectionHeading
                   heading="From spreadsheets to seven countries"
-                  intro="Three years, two countries to seven, and a systems function built from nothing."
+                  intro="Two countries to seven, and a systems function built from nothing."
                 />
               </Reveal>
 
-              <Reveal delay={60}>
-                <div className="flex flex-col gap-3 lg:pt-2">
+              <Reveal
+                delay={60}
+                className="lg:col-start-7 lg:col-span-6 lg:sticky lg:top-[96px] lg:self-start"
+              >
+                <div className="flex flex-col gap-4">
                   <div
-                    className="mono text-[0.8125rem] px-4 py-3 rounded-lg"
+                    className="mono text-[0.8125rem] px-4 py-2 rounded-lg dim"
                     style={{
-                      border: "1px solid var(--border-strong)",
-                      color: "var(--muted)",
+                      border: "1px solid rgba(255,255,255,0.18)",
                     }}
                   >
                     2023 · 2 countries · spreadsheets
@@ -1154,13 +1353,14 @@ export default function Home() {
                   <div
                     aria-hidden="true"
                     className="w-px h-6 ml-6"
-                    style={{ background: "var(--border-strong)" }}
+                    style={{ background: "rgba(255,255,255,0.18)" }}
                   />
                   <div
-                    className="mono text-[0.8125rem] px-4 py-3 rounded-lg"
+                    className="mono text-[0.8125rem] px-4 py-2 rounded-lg"
                     style={{
-                      background: "var(--accent)",
-                      color: "#10161f",
+                      background: "transparent",
+                      border: "1px solid var(--accent-on-ink)",
+                      color: "var(--accent-on-ink)",
                     }}
                   >
                     2026 · 7 countries · full enterprise stack
@@ -1169,11 +1369,11 @@ export default function Home() {
               </Reveal>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-x-12 gap-y-8 mt-12">
-              <Reveal>
+            <div className="lg:col-span-12 grid lg:grid-cols-12 lg:gap-x-8 gap-y-8 mt-12">
+              <Reveal className="lg:col-start-1 lg:col-span-6">
                 <div>
                   <h3 className="h4 text-[1.125rem]">Where it started</h3>
-                  <p className="small mt-3 dim">
+                  <p className="small mt-4 dim">
                     Study Now operated across Nigeria and the UK, running core
                     operations entirely on spreadsheets — approximately 200
                     annual enrolments, fragmented manual workflows, and no
@@ -1181,10 +1381,10 @@ export default function Home() {
                   </p>
                 </div>
               </Reveal>
-              <Reveal delay={60}>
+              <Reveal delay={60} className="lg:col-start-7 lg:col-span-6">
                 <div>
                   <h3 className="h4 text-[1.125rem]">Where it is now</h3>
-                  <p className="small mt-3 dim">
+                  <p className="small mt-4 dim">
                     Seven countries, nine offices, 100+ employees, 500+ global
                     recruitment agents, 300,000+ student records, 1,500+ annual
                     enrolments — running on a fully integrated enterprise stack
@@ -1195,17 +1395,17 @@ export default function Home() {
               </Reveal>
             </div>
 
-            <Reveal delay={120}>
+            <Reveal delay={120} className="lg:col-span-12">
               <div
-                className="mt-12 pt-9 hair"
+                className="mt-12 pt-8 hair"
                 style={{ borderTop: "1px solid var(--border)" }}
               >
                 <h3 className="h4 text-[1.125rem] mb-6">
-                  What I built across three years
+                  What I built at Study Now
                 </h3>
-                <ul className="grid sm:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-3">
+                <ul className="grid sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-4">
                   {CASE_BUILT.map((item) => (
-                    <li key={item} className="flex gap-3">
+                    <li key={item} className="flex gap-4">
                       <span
                         aria-hidden="true"
                         className="mt-2 w-1 h-1 rounded-full shrink-0"
@@ -1225,12 +1425,11 @@ export default function Home() {
         {/* ── TOOLS ────────────────────────────────────── */}
         <section
           className="section-tight"
-          style={{ background: "var(--surface)" }}
+          style={{ background: "var(--surface-alt)" }}
         >
           <div className="container-page">
             <Reveal>
               <SectionHead
-                num="07"
                 label="Tools & stack"
                 heading="What I work with"
               />
@@ -1238,12 +1437,12 @@ export default function Home() {
 
             {/* auto-rows-fr equalises column heights so no group is left with
                 one orphaned chip row. */}
-            <div className="grid sm:grid-cols-2 lg:grid-cols-4 auto-rows-fr gap-x-8 gap-y-9 mt-10">
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 auto-rows-fr gap-x-8 gap-y-8 mt-12">
               {TOOL_GROUPS.map((g, i) => (
                 <Reveal key={g.group} delay={i * 60} className="h-full">
                   <div className="h-full">
                     <div
-                      className="label pb-3 mb-4"
+                      className="label pb-4 mb-4"
                       style={{ borderBottom: "1px solid var(--border)" }}
                     >
                       {g.group}
@@ -1266,27 +1465,27 @@ export default function Home() {
         <section
           id="writing"
           className="section"
-          style={{ background: "var(--surface-alt)" }}
+          style={{ background: "var(--surface)" }}
         >
-          <div className="container-page">
-            {/* Intro centred above the cards rather than stranded left. */}
-            <Reveal>
-              <div className="text-center mx-auto" style={{ maxWidth: "620px" }}>
+          <div className="container-page grid lg:grid-cols-12">
+            {/* Intro cols 3–10, centred above the cards rather than stranded left. */}
+            <Reveal className="lg:col-start-3 lg:col-span-8">
+              <div className="text-center">
                 <div className="section-head inline-block text-left">
                   <div className="eyebrow">
-                    <span className="num">08</span>
                     <span className="label">Writing</span>
                   </div>
                 </div>
                 <h2 className="h2">Thinking in public</h2>
-                <p className="lead mt-5" style={{ color: "var(--muted)" }}>
+                <p className="lead mt-6" style={{ color: "var(--muted)" }}>
                   Operations, technology, and the messy reality of building
                   things that work.
                 </p>
               </div>
             </Reveal>
 
-            <div className="grid md:grid-cols-3 gap-5 mt-12">
+            {/* Cards cols 1–12, full width. */}
+            <div className="lg:col-span-12 grid md:grid-cols-3 gap-6 mt-12 items-stretch">
               {POSTS.map((p, i) => (
                 // h-full on the wrapper so the card's own h-full has a height
                 // to fill — otherwise the three cards stagger.
@@ -1295,9 +1494,9 @@ export default function Home() {
                     href={p.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="card p-7 h-full flex flex-col"
+                    className="card p-8 h-full flex flex-col"
                   >
-                    <div className="flex items-baseline justify-between gap-3">
+                    <div className="flex items-baseline justify-between gap-4">
                       <span className="label">{p.tag}</span>
                       <span
                         className="mono text-[0.75rem]"
@@ -1307,19 +1506,19 @@ export default function Home() {
                       </span>
                     </div>
                     <h3
-                      className="text-[1.0625rem] font-semibold leading-snug mt-3"
+                      className="text-[1.0625rem] font-semibold leading-snug mt-4"
                       style={{ color: "var(--ink)" }}
                     >
                       {p.title}
                     </h3>
                     <p
-                      className="small mt-3 flex-1"
+                      className="small mt-4 flex-1"
                       style={{ color: "var(--muted)" }}
                     >
                       {p.excerpt}
                     </p>
                     <span
-                      className="small font-medium mt-5"
+                      className="small font-medium mt-6"
                       style={{ color: "var(--link)" }}
                     >
                       Read ↗
@@ -1329,8 +1528,8 @@ export default function Home() {
               ))}
             </div>
 
-            <Reveal delay={120}>
-              <div className="text-center mt-10">
+            <Reveal delay={120} className="lg:col-span-12">
+              <div className="text-center mt-8">
                 <a
                   href="https://zealenigma.substack.com"
                   target="_blank"
@@ -1348,15 +1547,14 @@ export default function Home() {
         <section
           id="contact"
           className="section"
-          style={{ background: "var(--surface)" }}
+          style={{ background: "var(--surface-alt)" }}
         >
-          {/* Centred and narrow — a quiet close, space on both sides. */}
-          <div className="container-page">
-            <div className="mx-auto text-center" style={{ maxWidth: "620px" }}>
+          {/* Centred and narrow — a quiet close, space on both sides. Cols 4–9. */}
+          <div className="container-page grid lg:grid-cols-12">
+            <div className="lg:col-start-4 lg:col-span-6 text-center">
               <Reveal>
                 <div className="section-head inline-block text-left">
                   <div className="eyebrow">
-                    <span className="num">09</span>
                     <span className="label">Contact</span>
                   </div>
                 </div>
@@ -1364,7 +1562,7 @@ export default function Home() {
               </Reveal>
 
               <Reveal delay={60}>
-                <p className="lead mt-5" style={{ color: "var(--muted)" }}>
+                <p className="lead mt-6" style={{ color: "var(--muted)" }}>
                   If you are hiring for operations, delivery or transformation
                   leadership, or you have an operational problem you want a view
                   on, I would be glad to talk.
@@ -1372,7 +1570,7 @@ export default function Home() {
               </Reveal>
 
               <Reveal delay={120}>
-                <div className="flex flex-col sm:flex-row gap-3 mt-9 justify-center">
+                <div className="flex flex-col sm:flex-row gap-4 mt-8 justify-center">
                   <a
                     href="mailto:azeezbasit700@gmail.com"
                     className="btn btn-primary"
@@ -1420,7 +1618,7 @@ export default function Home() {
         <footer
           className="py-10"
           style={{
-            background: "var(--surface-alt)",
+            background: "var(--surface)",
             borderTop: "1px solid var(--border)",
           }}
         >

@@ -22,24 +22,26 @@ const jetbrainsMono = JetBrains_Mono({
   variable: "--font-mono",
 });
 
+const TITLE = "Basit Azeez | Operations and Delivery Leader";
+const DESCRIPTION =
+  "I build the systems that let organisations scale, then get people to use them. Seven countries, twenty people, four enterprise migrations, and a platform taken from requirements to production.";
+
 export const metadata: Metadata = {
-  title: "Basit Adekunle Azeez | Operations and Delivery Leader",
-  description:
-    "I build the systems that let organisations scale, and then I get people to use them. Seven countries, twenty people, four enterprise migrations, and a platform taken from requirements to production.",
-  keywords: [
-    "operations leader",
-    "delivery manager",
-    "business transformation",
-    "process improvement",
-    "enterprise systems migration",
-    "AI automation",
-    "London",
-  ],
+  metadataBase: new URL("https://www.basitazeez.com"),
+  title: TITLE,
+  description: DESCRIPTION,
   openGraph: {
-    title: "Basit Adekunle Azeez | Operations and Delivery Leader",
-    description:
-      "I build the systems that let organisations scale, and then I get people to use them.",
+    title: TITLE,
+    description: DESCRIPTION,
     type: "website",
+    url: "https://www.basitazeez.com",
+    // og:image comes from app/opengraph-image.tsx (Next.js file convention) —
+    // no need to list it here, Next.js injects it automatically.
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: TITLE,
+    description: DESCRIPTION,
   },
 };
 

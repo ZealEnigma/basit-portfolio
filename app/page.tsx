@@ -278,29 +278,31 @@ const CASE_BUILT = [
 /* ── WRITING ─────────────────────────────────────────── */
 const SUBSTACK = "https://zealenigma.substack.com";
 
-/* TODO: `href` currently points at the Substack index for all three because the
-   individual post URLs were not available. Swap in the real permalinks. */
+/* Real posts, newest first. Excerpts are each post's own subtitle, quoted
+   verbatim — nothing here is written for the site. */
 const POSTS = [
   {
-    title: "Why most process improvement efforts fail before they start",
-    excerpt:
-      "The problem is rarely the process. It is that nobody has agreed on what good actually looks like — and no amount of mapping will fix that.",
-    tag: "Operations",
-    href: SUBSTACK,
+    title: "The Eureka Moment Comes Later",
+    excerpt: "What arrives late is the moment, not the thinking.",
+    tag: "Problem solving",
+    date: "10 Aug 2026",
+    href: `${SUBSTACK}/p/the-eureka-moment-comes-later`,
   },
   {
-    title: "The difference between an operating system and a tool stack",
+    title: "The AI Paradox in Modern Organizations",
     excerpt:
-      "Buying Monday.com does not give you an operating system. An operating system is what decides what goes into Monday.com, who owns it, and what happens when it breaks.",
-    tag: "Systems thinking",
-    href: SUBSTACK,
+      "Why individual productivity may be quietly weakening organisational intelligence.",
+    tag: "Organisations",
+    date: "14 Jun 2026",
+    href: `${SUBSTACK}/p/the-ai-paradox-in-modern-organisations`,
   },
   {
-    title: "On building things you were never trained to build",
+    title: "Why People Feel Guilty Using AI",
     excerpt:
-      "I studied architecture. Now I build operational infrastructure. The skills are more transferable than you might think — and less transferable than I initially assumed.",
-    tag: "Career",
-    href: SUBSTACK,
+      "There is a quiet tension around AI that most people recognise but rarely admit.",
+    tag: "Adoption",
+    date: "8 May 2026",
+    href: `${SUBSTACK}/p/why-people-feel-guilty-using-ai`,
   },
 ];
 
@@ -1286,14 +1288,24 @@ export default function Home() {
 
             <div className="grid md:grid-cols-3 gap-5 mt-12">
               {POSTS.map((p, i) => (
-                <Reveal key={p.title} delay={i * 60}>
+                // h-full on the wrapper so the card's own h-full has a height
+                // to fill — otherwise the three cards stagger.
+                <Reveal key={p.title} delay={i * 60} className="h-full">
                   <a
                     href={p.href}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="card p-7 h-full flex flex-col"
                   >
-                    <span className="label">{p.tag}</span>
+                    <div className="flex items-baseline justify-between gap-3">
+                      <span className="label">{p.tag}</span>
+                      <span
+                        className="mono text-[0.75rem]"
+                        style={{ color: "var(--muted)" }}
+                      >
+                        {p.date}
+                      </span>
+                    </div>
                     <h3
                       className="text-[1.0625rem] font-semibold leading-snug mt-3"
                       style={{ color: "var(--ink)" }}

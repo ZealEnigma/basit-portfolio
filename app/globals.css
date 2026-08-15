@@ -2,27 +2,28 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Dark canvas. Navy base keeps the identity the CV set; clay lifts to carry on
+   a dark ground, where the paper-palette tone was far too dark to read. */
 :root {
-  --ink: #16283f;
-  --accent: #b4593a; /* clay */
-  --body: #2d2d2d;
-  /* Brief specifies #6B6B66, which reaches only 4.19:1 on --surface-alt.
-     Darkened to clear 4.5:1 on every surface while keeping the warm cast. */
-  --muted: #5f5f59;
+  --ink: #f4f1eb; /* headings — warm off-white, not pure white */
+  --accent: #d9835f; /* clay, lifted for dark */
+  --body: #c6ced9;
+  --muted: #97a2b1;
 
-  --surface: #fdfcfa;
-  --surface-alt: #ede7de;
-  --surface-ink: #101e33;
-  --border: #e0dad0;
-  --border-strong: #cbc3b5;
+  --surface: #111823;
+  --surface-alt: #17212e; /* lifted, for alternating sections */
+  --surface-ink: #0b1119; /* deepest, for the two feature sections */
+  --border: #27313f;
+  --border-strong: #3a4655;
 
-  --accent-soft: #f3e7e1;
-  /* Clay reaches 4.62:1 on --surface but only 3.86:1 on --surface-alt, so any
-     clay used at body size (links, section numerals) takes the deepened tone.
-     Same hue — not a second accent. */
-  --accent-deep: #97452a;
+  --accent-soft: rgba(217, 131, 95, 0.14);
+  /* On a dark ground the body-size clay needs lifting, not deepening. */
+  --accent-deep: #e8a183;
   --link: var(--accent-deep);
-  --accent-on-ink: #d98b6a;
+  --accent-on-ink: #e8a183;
+
+  --card: #18212e;
+  --card-border: #2c3745;
 
   --container: 1120px;
   --container-wide: 1320px;
@@ -247,28 +248,21 @@ body {
   }
 
   /* ── Components ─────────────────────────────────────── */
+  /* On a dark ground, depth comes from a lifted surface rather than shadow. */
   .card {
     display: block;
-    background: var(--surface);
-    border: 1px solid var(--border);
+    background: var(--card);
+    border: 1px solid var(--card-border);
     border-radius: 10px;
-    box-shadow:
-      0 1px 2px rgba(22, 40, 63, 0.04),
-      0 6px 16px -8px rgba(22, 40, 63, 0.08);
     transition:
+      background-color 150ms cubic-bezier(0.4, 0, 0.2, 1),
       border-color 150ms cubic-bezier(0.4, 0, 0.2, 1),
-      box-shadow 150ms cubic-bezier(0.4, 0, 0.2, 1),
       transform 150ms cubic-bezier(0.4, 0, 0.2, 1);
   }
   .card:hover {
     border-color: var(--accent);
+    background: #1d2734;
     transform: translateY(-2px);
-    box-shadow:
-      0 1px 2px rgba(22, 40, 63, 0.05),
-      0 14px 28px -12px rgba(22, 40, 63, 0.16);
-  }
-  .on-ink .card {
-    box-shadow: none;
   }
 
   .btn {
@@ -288,19 +282,19 @@ body {
   }
 
   .btn-primary {
-    background: var(--ink);
-    color: #fff;
-    border: 1px solid var(--ink);
+    background: var(--accent);
+    color: #10161f;
+    border: 1px solid var(--accent);
   }
   .btn-primary:hover {
-    background: #142640;
-    border-color: #142640;
+    background: #e39371;
+    border-color: #e39371;
   }
 
   .btn-secondary {
     background: transparent;
     color: var(--ink);
-    border: 1px solid var(--border);
+    border: 1px solid var(--border-strong);
   }
   .btn-secondary:hover {
     border-color: var(--accent);
@@ -344,45 +338,21 @@ body {
     }
   }
 
-  /* ── Dark section overrides ─────────────────────────── */
+  /* ── Feature sections ───────────────────────────────
+     The whole page is dark now, so these recede to the deepest surface
+     rather than inverting. Text colours already suit the ground. */
   .on-ink {
     background: var(--surface-ink);
-    color: #c3cedd;
-  }
-  .on-ink .h2,
-  .on-ink .h3,
-  .on-ink .h4 {
-    color: #fff;
-  }
-  .on-ink .label {
-    color: #94a8c2;
-  }
-  .on-ink .lead {
-    color: #c3cedd;
-  }
-  .on-ink .section-head .rule {
-    background: var(--accent-on-ink);
   }
   .on-ink .card {
-    background: rgba(255, 255, 255, 0.03);
-    border-color: rgba(255, 255, 255, 0.13);
+    background: #131b26;
+    border-color: #26303d;
   }
-  .on-ink .card:hover {
-    border-color: var(--accent-on-ink);
-  }
-  .on-ink .chip {
-    background: rgba(217, 139, 106, 0.16);
-    color: #f0ddd4;
-  }
-  .on-ink .prose-link {
-    color: var(--accent-on-ink);
-  }
-  /* Hairlines and muted text inside a dark section. */
   .on-ink .hair {
-    border-color: rgba(255, 255, 255, 0.14) !important;
+    border-color: var(--border) !important;
   }
   .on-ink .dim {
-    color: #a6b3c4;
+    color: var(--muted);
   }
 }
 

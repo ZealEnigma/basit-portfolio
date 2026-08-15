@@ -262,7 +262,7 @@ const CASE_BUILT = [
   "Excel to Monday.com migration — first operational platform, 500+ agents trained",
   "Proprietary GSP admissions platform — business requirements to live production",
   "Google Workspace to Microsoft 365 — full enterprise migration, zero critical downtime",
-  "BambooHR implementation — 70+ employee workforce, full audit readiness",
+  "BambooHR implementation — 100+ person workforce, full audit readiness",
   "Monday.com to GSP migration — workflows redesigned across 7 countries",
   "AI-powered lead ecosystem (Element451 + GSP) — 50,000+ monthly interactions",
   "AI automation layer across compliance, partner management and finance, with human review gates",
@@ -486,8 +486,8 @@ function FlowNode({
     <div
       className="rounded-[10px] p-4 flex-1 min-w-0"
       style={{
-        background: "rgba(255,255,255,0.04)",
-        border: "1px solid rgba(255,255,255,0.13)",
+        background: "var(--card)",
+        border: "1px solid var(--card-border)",
         borderLeft: `2px solid ${accentColour}`,
       }}
     >
@@ -501,7 +501,7 @@ function FlowNode({
         {title}
       </div>
       {note && (
-        <div className="text-[0.8125rem] mt-1 leading-snug" style={{ color: "#94a8c2" }}>
+        <div className="text-[0.8125rem] mt-1 leading-snug" style={{ color: "var(--muted)" }}>
           {note}
         </div>
       )}
@@ -515,7 +515,7 @@ function ConfidenceFlow() {
       className="rounded-[10px] p-6 md:p-8"
       style={{
         background: "rgba(255,255,255,0.02)",
-        border: "1px solid rgba(255,255,255,0.1)",
+        border: "1px solid var(--border)",
       }}
     >
       <div className="label mb-6">How a record actually gets written</div>
@@ -549,7 +549,7 @@ function ConfidenceFlow() {
         />
       </div>
 
-      <p className="small mt-6" style={{ color: "#94a8c2" }}>
+      <p className="small mt-6" style={{ color: "var(--muted)" }}>
         The model&rsquo;s surface area shrinks over time, because every pattern I
         see twice stops being a model decision.
       </p>
@@ -618,7 +618,7 @@ function BackToTop() {
         background: "var(--surface)",
         border: "1px solid var(--border)",
         color: "var(--ink)",
-        boxShadow: "0 6px 20px -8px rgba(22,40,63,0.28)",
+        boxShadow: "0 6px 20px -8px rgba(0,0,0,0.5)",
       }}
     >
       <span aria-hidden="true">↑</span>
@@ -716,7 +716,7 @@ export default function Home() {
                   style={{
                     aspectRatio: "290 / 363",
                     border: "1px solid var(--border)",
-                    boxShadow: "0 18px 40px -24px rgba(22,40,63,0.32)",
+                    boxShadow: "0 18px 40px -24px rgba(0,0,0,0.55)",
                   }}
                 />
               </div>
@@ -933,7 +933,7 @@ export default function Home() {
           <div className="container-page">
             {/* Proof sits beside the intro rather than below the four blocks —
                 it fills the empty right column and front-loads the evidence. */}
-            <div className="grid lg:grid-cols-[1.15fr_1fr] gap-10 lg:gap-14 items-start">
+            <div className="grid lg:grid-cols-[1.15fr_1fr] gap-10 lg:gap-14 items-center">
               <Reveal>
                 <SectionHead
                   num="03"
@@ -956,7 +956,7 @@ export default function Home() {
                     Four enterprise platform migrations across 7 countries —
                     Excel to Monday.com with 500+ agents trained, Google
                     Workspace to Microsoft 365 with zero critical downtime,
-                    BambooHR across a 70+ person workforce, and Monday.com to a
+                    BambooHR across a 100+ person workforce, and Monday.com to a
                     proprietary platform with workflows redesigned across every
                     market.
                   </p>
@@ -1001,10 +1001,10 @@ export default function Home() {
                   <Reveal key={b.title} delay={i * 60}>
                     <div
                       className="pt-5"
-                      style={{ borderTop: "1px solid rgba(255,255,255,0.13)" }}
+                      style={{ borderTop: "1px solid var(--border)" }}
                     >
                       <h3 className="h4 text-[1.125rem]">{b.title}</h3>
-                      <p className="mt-3 small" style={{ color: "#a9b8cc" }}>
+                      <p className="mt-3 small" style={{ color: "var(--muted)" }}>
                         {b.body}
                       </p>
                     </div>
@@ -1128,7 +1128,7 @@ export default function Home() {
           <div className="container-page container-wide">
             {/* Timeline sits beside the intro: it is the visual element and
                 belongs at the top, not stranded underneath. */}
-            <div className="grid lg:grid-cols-[1fr_1fr] gap-10 lg:gap-14 items-start">
+            <div className="grid lg:grid-cols-[1fr_1fr] gap-10 lg:gap-14 items-center">
               <Reveal>
                 <SectionHead
                   num="06"
@@ -1143,8 +1143,8 @@ export default function Home() {
                   <div
                     className="mono text-[0.8125rem] px-4 py-3 rounded-lg"
                     style={{
-                      border: "1px solid rgba(255,255,255,0.16)",
-                      color: "#a6b3c4",
+                      border: "1px solid var(--border-strong)",
+                      color: "var(--muted)",
                     }}
                   >
                     2023 · 2 countries · spreadsheets
@@ -1152,13 +1152,13 @@ export default function Home() {
                   <div
                     aria-hidden="true"
                     className="w-px h-6 ml-6"
-                    style={{ background: "rgba(255,255,255,0.2)" }}
+                    style={{ background: "var(--border-strong)" }}
                   />
                   <div
                     className="mono text-[0.8125rem] px-4 py-3 rounded-lg"
                     style={{
                       background: "var(--accent)",
-                      color: "#fff",
+                      color: "#10161f",
                     }}
                   >
                     2026 · 7 countries · full enterprise stack
@@ -1183,7 +1183,7 @@ export default function Home() {
                 <div>
                   <h3 className="h4 text-[1.125rem]">Where it is now</h3>
                   <p className="small mt-3 dim">
-                    Seven countries, nine offices, 70+ employees, 500+ global
+                    Seven countries, nine offices, 100+ employees, 500+ global
                     recruitment agents, 300,000+ student records, 1,500+ annual
                     enrolments — running on a fully integrated enterprise stack
                     that scaled through every stage of expansion without the

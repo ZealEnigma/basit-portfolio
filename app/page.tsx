@@ -8,7 +8,7 @@ const INDEX = [
   { label: "Automation and AI", code: "M-500", href: "#automation" },
   { label: "About", code: "A-100", href: "#about" },
   { label: "Writing", code: "D-700", href: "#writing" },
-  { label: "Contact", code: "C-800", href: "#contact" },
+  { label: "Work with me", code: "C-800", href: "#contact" },
 ];
 
 const FIGURES = [
@@ -133,13 +133,18 @@ const FLOW = [
   ["03", "Confidence gate", "Threshold and value limit"],
 ];
 
-const REVISIONS = [
-  { rev: "F", date: "2024 · now", title: "Head of Business Systems and Operations, GSP Platform", org: "Study Now · contractual title: Digital Transformation Project Manager", current: true },
-  { rev: "E", date: "2023 · 2024", title: "Operations Manager, Business Systems", org: "Study Now · Monday.com and GSP" },
-  { rev: "D", date: "2021 · 2022", title: "Technical Delivery Manager", org: "Getir, Germany · founding German market team" },
-  { rev: "C", date: "2020 · 2021", title: "Operations and Delivery Manager", org: "Development Hub Consulting, Germany" },
-  { rev: "B", date: "2018 · 2021", title: "MA, Architectural and Cultural Heritage", org: "Hochschule Anhalt, Dessau" },
-  { rev: "A", date: "2010 · 2019", title: "Architecture, then project and product management", org: "BTech Architecture, FUTA; practice in Nigeria" },
+const PLACES = [
+  { place: "Study Now", where: "London", years: "2023 to now", line: "Built the technology, business systems and operations function from nothing, and GSP with it." },
+  { place: "Getir", where: "Germany", years: "2021 to 2022", line: "Founding operations team for the German market launch." },
+  { place: "Development Hub Consulting", where: "Germany", years: "2020 to 2021", line: "Operational and systems set-up for a marketplace launch." },
+  { place: "Architecture", where: "Nigeria and Germany", years: "2010 to 2021", line: "Trained and practised as an architect; MA at Hochschule Anhalt, Dessau." },
+];
+
+const DOORS = [
+  { n: "01", title: "Leadership roles", line: "Head-of roles in operations, business systems, product operations and AI transformation.", subject: "Leadership role" },
+  { n: "02", title: "Advisory and consulting", line: "Operating models, platform builds and migrations, CRM and commission design, intake and governance.", subject: "Advisory" },
+  { n: "03", title: "Systems and automation builds", line: "Internal tools, portals, dashboards and automation, from prototype to production.", subject: "Build" },
+  { n: "04", title: "Speaking and writing", line: "Talks, panels, podcasts and guest writing on operations, systems and adopting AI.", subject: "Speaking or writing" },
 ];
 
 const CERTS = ["MBA", "PMP", "ITIL 4", "CSM", "AI for Business, Wharton", "Lean Six Sigma White Belt", "APM Member", "Monday.com Core"];
@@ -189,6 +194,9 @@ export default function Home() {
           <div style={{ display: "flex", flexWrap: "wrap", gap: 12 }}>
             <a href="#work" className="btn solid">
               See the work
+            </a>
+            <a href="#contact" className="btn">
+              Work with me
             </a>
             <a href="/Basit_Azeez_CV.pdf" download className="btn">
               Download CV
@@ -420,35 +428,22 @@ export default function Home() {
           </div>
           <div>
             <div className="tag" style={{ fontWeight: 600, marginBottom: 8 }}>
-              Revision schedule
+              Where I have worked
             </div>
-            <div className="table-wrap">
-              <table style={{ minWidth: 420, fontSize: 14 }}>
-                <thead>
-                  <tr>
-                    <th>REV</th>
-                    <th>DATE</th>
-                    <th>DESCRIPTION</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {REVISIONS.map((r) => (
-                    <tr key={r.rev} style={{ background: r.current ? "#f3e3e1" : undefined }}>
-                      <td className="mono" style={{ fontWeight: 600, color: r.current ? "var(--red-text)" : undefined }}>
-                        {r.rev}
-                      </td>
-                      <td className="mono" style={{ fontSize: 12, whiteSpace: "nowrap", textTransform: "uppercase" }}>
-                        {r.date}
-                      </td>
-                      <td>
-                        <b>{r.title}</b>
-                        <br />
-                        <span style={{ fontSize: 13, color: "var(--muted)" }}>{r.org}</span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            <div style={{ borderTop: "1.5px solid var(--ink)" }}>
+              {PLACES.map((p) => (
+                <div key={p.place} style={{ padding: "14px 0", borderBottom: "1px solid var(--hair)", display: "flex", flexDirection: "column", gap: 4 }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", gap: 12, flexWrap: "wrap", alignItems: "baseline" }}>
+                    <b className="wide" style={{ fontStretch: "112%", fontSize: 19 }}>
+                      {p.place}
+                    </b>
+                    <span className="caption" style={{ color: "var(--muted)" }}>
+                      {p.where} · {p.years}
+                    </span>
+                  </div>
+                  <span style={{ fontSize: 15, lineHeight: 1.55, color: "#2e2e2b" }}>{p.line}</span>
+                </div>
+              ))}
             </div>
           </div>
         </div>
@@ -526,47 +521,72 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Title block / contact */}
-      <footer id="contact" style={{ border: "2px solid var(--ink)", display: "flex", flexWrap: "wrap", background: "var(--paper)" }}>
-        <div style={{ flex: "2 1 420px", minWidth: 0, padding: "clamp(22px, 3vw, 36px)", borderRight: "1px solid var(--ink)", display: "flex", flexDirection: "column", gap: 16 }}>
-          <div className="tag">Issued for conversation</div>
-          <div className="wide" style={{ fontWeight: 800, fontSize: "clamp(17px, 5.4vw, 54px)", lineHeight: 0.95, textTransform: "uppercase" }}>
-            Hiring for operations, delivery or transformation?
+      {/* Work with me */}
+      <section id="contact" style={{ display: "flex", flexDirection: "column", gap: 28 }}>
+        <SectionHead n={6} code="C-800" title="Work with me" red />
+        <div className="ruled cols-240">
+          {DOORS.map((d) => (
+            <a
+              key={d.n}
+              href={`mailto:azeezbasit700@gmail.com?subject=${encodeURIComponent(d.subject + ": ")}`}
+              style={{ padding: 22, display: "flex", flexDirection: "column", gap: 10, minHeight: 200 }}
+            >
+              <span className="mono" style={{ fontSize: 12, color: "var(--red-text)", fontWeight: 600 }}>
+                {d.n}
+              </span>
+              <b className="wide" style={{ fontStretch: "112%", fontSize: 20, lineHeight: 1.2 }}>
+                {d.title}
+              </b>
+              <span style={{ fontSize: 15, lineHeight: 1.55, color: "#2e2e2b", flex: 1 }}>{d.line}</span>
+              <span className="mono" style={{ fontSize: 12, fontWeight: 600, letterSpacing: "0.06em" }}>
+                START A CONVERSATION →
+              </span>
+            </a>
+          ))}
+        </div>
+
+        <footer style={{ border: "2px solid var(--ink)", display: "flex", flexWrap: "wrap", background: "var(--paper)" }}>
+          <div style={{ flex: "2 1 420px", minWidth: 0, padding: "clamp(22px, 3vw, 36px)", borderRight: "1px solid var(--ink)", display: "flex", flexDirection: "column", gap: 16 }}>
+            <div className="tag">Issued for conversation</div>
+            <div className="wide" style={{ fontWeight: 800, fontSize: "clamp(17px, 5.4vw, 54px)", lineHeight: 0.95, textTransform: "uppercase" }}>
+              Hiring, building or fixing operations?
+            </div>
+            <p style={{ margin: 0, fontSize: 17, lineHeight: 1.55, maxWidth: 560 }}>
+              A role, an advisory piece, a system that needs building or a conversation worth having. Tell me what you are
+              working on and I will reply within two working days.
+            </p>
           </div>
-          <p style={{ margin: 0, fontSize: 17, lineHeight: 1.55, maxWidth: 560 }}>
-            Or you have an operational problem you want a view on. I would be glad to talk.
-          </p>
-        </div>
-        <div style={{ flex: "1 1 300px", display: "flex", flexDirection: "column" }}>
-          <div className="mono" style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", fontSize: 12 }}>
-            {[
-              ["Client", "Hiring teams"],
-              ["Location", "West Sussex · London hybrid or remote"],
-              ["Right to work", "UK to 2030"],
-              ["Sponsorship", "Not required"],
-            ].map(([k, v], i) => (
-              <div key={k} style={{ padding: "10px 12px", borderBottom: "1px solid var(--ink)", borderRight: i % 2 === 0 ? "1px solid var(--ink)" : undefined }}>
-                {k.toUpperCase()}
-                <br />
-                <b style={{ fontFamily: "var(--font-archivo)", fontSize: 14 }}>{v}</b>
-              </div>
-            ))}
+          <div style={{ flex: "1 1 300px", display: "flex", flexDirection: "column" }}>
+            <div className="mono" style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", fontSize: 12 }}>
+              {[
+                ["Client", "Organisations, teams and founders"],
+                ["Location", "West Sussex · London hybrid or remote"],
+                ["Right to work", "UK to 2030"],
+                ["Sponsorship", "Not required"],
+              ].map(([k, v], i) => (
+                <div key={k} style={{ padding: "10px 12px", borderBottom: "1px solid var(--ink)", borderRight: i % 2 === 0 ? "1px solid var(--ink)" : undefined }}>
+                  {k.toUpperCase()}
+                  <br />
+                  <b style={{ fontFamily: "var(--font-archivo)", fontSize: 14 }}>{v}</b>
+                </div>
+              ))}
+            </div>
+            <a href={CALENDLY} className="btn solid" style={{ justifyContent: "space-between", border: 0, borderBottom: "1px solid var(--ink)", minHeight: 52 }}>
+              Book 30 minutes <span aria-hidden="true">→</span>
+            </a>
+            <a href="mailto:azeezbasit700@gmail.com" className="mono" style={{ minHeight: 48, display: "flex", alignItems: "center", padding: "0 14px", borderBottom: "1px solid var(--ink)", fontSize: 13 }}>
+              azeezbasit700@gmail.com
+            </a>
+            <a href="https://linkedin.com/in/basitadekunle" className="mono" style={{ minHeight: 48, display: "flex", alignItems: "center", padding: "0 14px", fontSize: 13 }}>
+              linkedin.com/in/basitadekunle
+            </a>
           </div>
-          <a href={CALENDLY} className="btn solid" style={{ justifyContent: "space-between", border: 0, borderBottom: "1px solid var(--ink)", minHeight: 52 }}>
-            Book 30 minutes <span aria-hidden="true">→</span>
-          </a>
-          <a href="mailto:azeezbasit700@gmail.com" className="mono" style={{ minHeight: 48, display: "flex", alignItems: "center", padding: "0 14px", borderBottom: "1px solid var(--ink)", fontSize: 13 }}>
-            azeezbasit700@gmail.com
-          </a>
-          <a href="https://linkedin.com/in/basitadekunle" className="mono" style={{ minHeight: 48, display: "flex", alignItems: "center", padding: "0 14px", fontSize: 13 }}>
-            linkedin.com/in/basitadekunle
-          </a>
-        </div>
-        <div className="caption" style={{ flex: "1 1 100%", borderTop: "1px solid var(--ink)", padding: "10px 14px", display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 8 }}>
-          <span>© 2026 Basit Adekunle Azeez</span>
-          <span>All dimensions verified on site</span>
-        </div>
-      </footer>
+          <div className="caption" style={{ flex: "1 1 100%", borderTop: "1px solid var(--ink)", padding: "10px 14px", display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 8 }}>
+            <span>© 2026 Basit Adekunle Azeez</span>
+            <span>All dimensions verified on site</span>
+          </div>
+        </footer>
+      </section>
     </Sheet>
   );
 }

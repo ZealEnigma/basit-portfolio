@@ -3,13 +3,12 @@ import type { ReactNode } from "react";
 /** Architectural section marker: number over sheet code, then a plain title. */
 export function SectionHead({
   n,
-  code,
   title,
   red = false,
   stamp,
 }: {
   n: number;
-  code: string;
+  code?: string;
   title: string;
   red?: boolean;
   stamp?: string;
@@ -17,8 +16,7 @@ export function SectionHead({
   return (
     <div className="shead">
       <span className={`marker${red ? " red" : ""}`} aria-hidden="true">
-        <span>{n}</span>
-        <span>{code}</span>
+        <span>{String(n).padStart(2, "0")}</span>
       </span>
       <h2>{title}</h2>
       <span className="rule" aria-hidden="true" />

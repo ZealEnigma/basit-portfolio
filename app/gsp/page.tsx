@@ -122,9 +122,9 @@ export default function GspPage() {
     <Sheet>
       <header className="topline tag" style={{ alignItems: "center" }}>
         <Link href="/" className="btn" style={{ minHeight: 44, padding: "0 14px", fontSize: 12 }}>
-          <span aria-hidden="true">←</span> A-001 · Home
+          <span aria-hidden="true">←</span> Home
         </Link>
-        <span>Sheet S-300 · GSP Platform · Study Now · 2024 to now</span>
+        <span>Case study · GSP · Study Now · 2024 to now</span>
       </header>
 
       {/* Hero */}
@@ -154,18 +154,18 @@ export default function GspPage() {
           heavy
           src="/drawing/gsp-application.webp"
           alt="Live GSP application record with the ten-stage tracker, officers, deposit stage and compose panel"
-          caption="View 0.1 · Live application record: ten stages, named owners, deposit and messages in one place"
+          caption="Live application record: ten stages, named owners, deposit and messages in one place"
           note="Live system · test record"
         />
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(340px, 100%), 1fr))", gap: 20 }}>
-          <Fig src="/drawing/gsp-pipeline.webp" alt="Live GSP applications pipeline grouped by stage" caption="View 0.2 · Applications pipeline, grouped by stage" />
-          <Fig src="/drawing/gsp-settings.webp" alt="GSP settings: permissions, checklists, mandatory fields and agent tiers" caption="View 0.3 · Settings: permissions, checklists, mandatory fields, agent tiers. Configuration, not code" />
+          <Fig src="/drawing/gsp-pipeline.webp" alt="Live GSP applications pipeline grouped by stage" caption="Applications pipeline, grouped by stage" />
+          <Fig src="/drawing/gsp-settings.webp" alt="GSP settings: permissions, checklists, mandatory fields and agent tiers" caption="Settings: permissions, checklists, mandatory fields, agent tiers. Configuration, not code" />
         </div>
       </section>
 
       {/* Role */}
       <section style={{ ...col, gap: 24 }}>
-        <SectionHead n={1} code="S-301" title="My role" />
+        <SectionHead n={1} title="My role" />
         <div className="ruled cols-240">
           {ROLE.map(([t, l]) => (
             <div key={t} style={{ padding: 20, ...col, gap: 8 }}>
@@ -180,7 +180,7 @@ export default function GspPage() {
 
       {/* Commission */}
       <section id="commission" style={{ ...col, gap: 24 }}>
-        <SectionHead n={2} code="S-310" title="Commission" red stamp="GSP module in build" />
+        <SectionHead n={2} title="Commission" red stamp="GSP module in build" />
         <div style={{ border: "2px solid var(--red)", background: "var(--paper)", padding: "clamp(20px, 3vw, 36px)", ...col, gap: 28 }}>
           <DetailIntro
             title="Money in from institutions. Money out to partners. One source of truth."
@@ -236,35 +236,35 @@ export default function GspPage() {
 
       {/* Student portal */}
       <section id="portal" style={{ ...col, gap: 24 }}>
-        <SectionHead n={3} code="S-340" title="Student portal" stamp="Launching soon" />
+        <SectionHead n={3} title="Student portal" stamp="Launching soon" />
         <DetailIntro
           title="The B2C front door, built on the same record staff and agents use."
           body="Students see exactly what the CRM knows: every application across the UK and EU pipelines on its own stepper, the actions their team has asked of them, and updates from institutions kept separate from tasks. Designed from a live sweep of GSP so the portal never shows a stage or a status the platform does not hold."
         />
-        <Fig heavy src="/drawing/portal-applications.webp" alt="GSP student portal, Applications page with three applications across the UK and EU pipelines" caption="View 3.1 · Applications: UK and EU pipelines, one stepper each" note="Prototype v8 · test data" />
+        <Fig heavy src="/drawing/portal-applications.webp" alt="GSP student portal, Applications page with three applications across the UK and EU pipelines" caption="Applications: UK and EU pipelines, one stepper each" note="Prototype v8 · test data" />
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(340px, 100%), 1fr))", gap: 24 }}>
-          <Fig src="/drawing/portal-home.webp" alt="Student portal home with action-needed requests and updates" caption="View 3.2 · Home: actions raised by staff, updates from institutions" />
-          <Fig src="/drawing/portal-courses.webp" alt="Student portal course finder across nine destinations" caption="View 3.3 · Courses: search, shortlist and quick apply" />
+          <Fig src="/drawing/portal-home.webp" alt="Student portal home with action-needed requests and updates" caption="Home: actions raised by staff, updates from institutions" />
+          <Fig src="/drawing/portal-courses.webp" alt="Student portal course finder across nine destinations" caption="Courses: search, shortlist and quick apply" />
         </div>
       </section>
 
       {/* Email automation */}
       <section id="email" style={{ ...col, gap: 24 }}>
-        <SectionHead n={4} code="S-350" title="Email automation" stamp="In build" />
+        <SectionHead n={4} title="Email automation" stamp="In build" />
         <DetailIntro
           title="From hard-coded rules to emails an admin can configure, and audit."
           body="Every stage email used to live in code. Now an admin builds it inside GSP’s existing Add Template steps: what it says, the moment it fires, who receives it and from which sender. Before saving, the template states in one plain sentence what it will do and is tested against sample applications, and a delivery log records what was sent, what fell back, and what did not fire and why."
         />
-        <Fig heavy src="/drawing/email-review.webp" alt="Edit Template, Review and test step, with a plain-language summary of what the template will do" caption="View 4.1 · Review and test: the template explains itself before it is saved" note="Prototype · sample data" />
+        <Fig heavy src="/drawing/email-review.webp" alt="Edit Template, Review and test step, with a plain-language summary of what the template will do" caption="Review and test: the template explains itself before it is saved" note="Prototype · sample data" />
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(340px, 100%), 1fr))", gap: 24 }}>
-          <Fig src="/drawing/email-templates.webp" alt="Templates grouped by the pipeline moment that sends them" caption="View 4.2 · Templates grouped by the moment that sends them" />
-          <Fig src="/drawing/email-log.webp" alt="Delivery log showing sent, not fired and failed emails with reasons" caption="View 4.3 · Delivery log: sent, not fired, failed, with the reason" />
+          <Fig src="/drawing/email-templates.webp" alt="Templates grouped by the pipeline moment that sends them" caption="Templates grouped by the moment that sends them" />
+          <Fig src="/drawing/email-log.webp" alt="Delivery log showing sent, not fired and failed emails with reasons" caption="Delivery log: sent, not fired, failed, with the reason" />
         </div>
       </section>
 
       {/* Modules */}
       <section style={{ ...col, gap: 24 }}>
-        <SectionHead n={5} code="S-320" title="Every module" />
+        <SectionHead n={5} title="Every module" />
         <div className="table-wrap">
           <table style={{ minWidth: 760 }}>
             <thead>
@@ -300,7 +300,7 @@ export default function GspPage() {
 
       {/* Method */}
       <section style={{ ...col, gap: 24 }}>
-        <SectionHead n={6} code="S-330" title="How each module gets made" />
+        <SectionHead n={6} title="How each module gets made" />
         <ol className="ruled cols-190" style={{ margin: 0, padding: 0, listStyle: "none" }}>
           {METHOD.map(([t, l], i) => (
             <li key={t} style={{ padding: 18, ...col, gap: 8 }}>
@@ -330,7 +330,7 @@ export default function GspPage() {
             Book a walkthrough <span aria-hidden="true">→</span>
           </a>
           <Link href="/" className="mono" style={{ minHeight: 52, display: "flex", alignItems: "center", padding: "0 18px", fontSize: 13, fontWeight: 600 }}>
-            BACK TO SHEET A-001
+            BACK TO HOME
           </Link>
         </div>
       </footer>

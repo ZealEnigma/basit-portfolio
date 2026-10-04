@@ -2,13 +2,13 @@ import Link from "next/link";
 import { Fig, Measure, SectionHead, Sheet } from "@/components/drawing";
 
 const INDEX = [
-  { label: "What I do", code: "A-010", href: "#what" },
-  { label: "GSP", code: "S-300", href: "/gsp", hot: true },
-  { label: "Work", code: "S-400", href: "#work" },
-  { label: "How I work", code: "A-200", href: "#principles" },
-  { label: "Automation and AI", code: "M-500", href: "#automation" },
-  { label: "Writing", code: "D-700", href: "#writing" },
-  { label: "Work with me", code: "C-800", href: "#contact" },
+  { label: "What I do", href: "#what" },
+  { label: "GSP", href: "/gsp", hot: true },
+  { label: "Work", href: "#work" },
+  { label: "How I work", href: "#principles" },
+  { label: "Automation and AI", href: "#automation" },
+  { label: "Writing", href: "#writing" },
+  { label: "Work with me", href: "#contact" },
 ];
 
 const FIGURES = [
@@ -173,13 +173,12 @@ export default function Home() {
       <header style={{ display: "flex", flexDirection: "column", gap: 14 }}>
         <div className="topline tag">
           <span style={{ fontWeight: 600 }}>Basit Adekunle Azeez</span>
-          <span>Operations, business systems and transformation leader · Rev 08</span>
+          <span>Operations, business systems and transformation leader</span>
         </div>
         <nav aria-label="Main" className="index">
           {INDEX.map((i) => (
-            <Link key={i.code} href={i.href} className={i.hot ? "hot" : undefined}>
+            <Link key={i.label} href={i.href} className={i.hot ? "hot" : undefined}>
               {i.label}
-              <span className="code mono">{i.code}</span>
             </Link>
           ))}
         </nav>
@@ -215,7 +214,7 @@ export default function Home() {
         <figure style={{ flex: "1 1 300px", maxWidth: 380, margin: 0 }}>
           <div className="dim caption" style={{ gap: 8, marginBottom: 8 }}>
             <i />
-            <span>6 yrs in operations</span>
+            <span>Architect turned operator</span>
             <i />
           </div>
           <div style={{ border: "1px solid var(--ink)", padding: 8, background: "var(--paper)", height: 440 }}>
@@ -227,8 +226,8 @@ export default function Home() {
             />
           </div>
           <figcaption className="caption" style={{ display: "flex", justifyContent: "space-between", marginTop: 8 }}>
-            <span>Elevation 01 · the author</span>
-            <span>NTS</span>
+            <span>Basit Adekunle Azeez</span>
+            <span>West Sussex, UK</span>
           </figcaption>
         </figure>
       </section>
@@ -242,7 +241,7 @@ export default function Home() {
 
       {/* What I do */}
       <section id="what" style={{ display: "flex", flexDirection: "column", gap: 28 }}>
-        <SectionHead n={1} code="A-010" title="What I do" />
+        <SectionHead n={1} title="What I do" />
         <div className="ruled cols-240">
           {CAPABILITIES.map((c) => (
             <div key={c.n} style={{ padding: 22, display: "flex", flexDirection: "column", gap: 10 }}>
@@ -257,13 +256,13 @@ export default function Home() {
           ))}
         </div>
         <p className="caption" style={{ margin: 0, color: "var(--muted)" }}>
-          The map. The evidence follows: problem, process, people, system, implementation, adoption, scale.
+          Each of these is backed by the work below.
         </p>
       </section>
 
       {/* GSP */}
       <section id="gsp" style={{ display: "flex", flexDirection: "column", gap: 28 }}>
-        <SectionHead n={2} code="S-300" title="The flagship: GSP" red />
+        <SectionHead n={2} title="The flagship: GSP" red />
         <div style={{ border: "2px solid var(--ink)", background: "var(--paper)", display: "flex", flexWrap: "wrap" }}>
           <div style={{ flex: "1 1 440px", padding: "clamp(22px, 3vw, 40px)", display: "flex", flexDirection: "column", gap: 20, borderRight: "1px solid var(--ink)" }}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -276,7 +275,7 @@ export default function Home() {
               ideation to the system of record and brought development in-house.
             </p>
             <Link href="/gsp" className="btn solid" style={{ alignSelf: "flex-start" }}>
-              Open sheet S-300
+              Read the GSP case study
             </Link>
           </div>
           <div style={{ flex: "1 1 420px", minWidth: 0 }}>
@@ -300,7 +299,7 @@ export default function Home() {
               src="/drawing/gsp-application.webp"
               alt="Live GSP application record with the ten-stage tracker, officers, deposit stage and messages"
               caption="Live application record: ten stages, named owners, deposit and messages in one place"
-              note="More views on sheet S-300"
+              note="More in the GSP case study"
             />
           </div>
         </div>
@@ -308,7 +307,7 @@ export default function Home() {
 
       {/* Work */}
       <section id="work" style={{ display: "flex", flexDirection: "column", gap: 28 }}>
-        <SectionHead n={3} code="S-400" title="What I have built" />
+        <SectionHead n={3} title="What I have built" />
         <div className="tag" style={{ fontWeight: 600, marginBottom: -12 }}>
           Professional work
         </div>
@@ -336,7 +335,7 @@ export default function Home() {
               <div style={{ padding: "16px 18px 20px", display: "flex", flexDirection: "column", gap: 10, flex: 1 }}>
                 <div className="caption" style={{ display: "flex", justifyContent: "space-between", gap: 10 }}>
                   <span>
-                    {w.sheet} · {w.kind}
+                    {w.kind}
                   </span>
                   <span className={`stamp${w.red ? " red" : ""}`}>{w.status}</span>
                 </div>
@@ -364,7 +363,7 @@ export default function Home() {
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: 8, minWidth: 0 }}>
                 <div className="caption" style={{ display: "flex", justifyContent: "space-between", gap: 10 }}>
-                  <span>{w.sheet}</span>
+                  <span>Personal project</span>
                   <span className="stamp red">{w.status}</span>
                 </div>
                 <h3 className="wide" style={{ margin: 0, fontWeight: 700, fontSize: 19, fontStretch: "112%" }}>
@@ -379,7 +378,7 @@ export default function Home() {
 
       {/* Principles */}
       <section id="principles" style={{ display: "flex", flexDirection: "column", gap: 28 }}>
-        <SectionHead n={4} code="A-200" title="How I work" />
+        <SectionHead n={4} title="How I work" />
         <div className="ruled cols-380">
           {PRINCIPLES.map(([t, line], i) => (
             <div key={t} style={{ padding: 22, display: "flex", gap: 20 }}>
@@ -405,7 +404,7 @@ export default function Home() {
 
       {/* Automation and AI */}
       <section id="automation" style={{ display: "flex", flexDirection: "column", gap: 28 }}>
-        <SectionHead n={5} code="M-500" title="Automation and AI" />
+        <SectionHead n={5} title="Automation and AI" />
         <div className="split">
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(220px, 100%), 1fr))", gap: 24, alignContent: "start" }}>
             {AUTOMATION.map(([t, body]) => (
@@ -419,7 +418,7 @@ export default function Home() {
           </div>
           <figure className="fig" style={{ padding: 22, display: "flex", flexDirection: "column" }}>
             <figcaption className="caption" style={{ fontWeight: 600, marginBottom: 16, marginTop: 0 }}>
-              Detail 4.1 · How a record gets written
+              How a record gets written
             </figcaption>
             {FLOW.map(([n, t, s]) => (
               <div key={n} style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
@@ -461,7 +460,7 @@ export default function Home() {
 
       {/* About */}
       <section id="about" style={{ display: "flex", flexDirection: "column", gap: 28 }}>
-        <SectionHead n={6} code="A-100" title="Two countries to seven" />
+        <SectionHead n={6} title="Two countries to seven" />
         <div className="split">
           <div style={{ display: "flex", flexDirection: "column", gap: 18, fontSize: 18, lineHeight: 1.65 }}>
             <p className="wide" style={{ margin: 0, fontStretch: "112%", fontWeight: 600, fontSize: 24, lineHeight: 1.35 }}>
@@ -551,7 +550,7 @@ export default function Home() {
 
       {/* Work with me */}
       <section id="contact" style={{ display: "flex", flexDirection: "column", gap: 28 }}>
-        <SectionHead n={7} code="C-800" title="Work with me" red />
+        <SectionHead n={7} title="Work with me" red />
         <p style={{ margin: 0, fontSize: "clamp(18px, 1.8vw, 22px)", lineHeight: 1.5, maxWidth: 820 }}>
           You do not need a vacancy to get in touch. If you are building something, fixing something, scaling something
           or working out what comes next, I would like to hear about it.
@@ -615,7 +614,7 @@ export default function Home() {
           </div>
           <div className="caption" style={{ flex: "1 1 100%", borderTop: "1px solid var(--ink)", padding: "10px 14px", display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 8 }}>
             <span>© 2026 Basit Adekunle Azeez</span>
-            <span>All dimensions verified on site</span>
+            <span>basitazeez.com</span>
           </div>
         </footer>
       </section>

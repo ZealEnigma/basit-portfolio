@@ -125,12 +125,6 @@ button:focus-visible {
   font-weight: 600;
   font-size: 15px;
 }
-.index a .code {
-  margin-left: auto;
-  font-size: 10px;
-  font-weight: 400;
-  color: var(--faint);
-}
 .index a.hot {
   color: var(--red-text);
 }
@@ -156,8 +150,8 @@ button:focus-visible {
 }
 .marker {
   flex: 0 0 auto;
-  width: 54px;
-  height: 54px;
+  width: 48px;
+  height: 48px;
   border: 1.5px solid var(--ink);
   border-radius: 50%;
   display: flex;
@@ -170,16 +164,9 @@ button:focus-visible {
 .marker span {
   flex: 1;
   display: flex;
+  align-items: center;
   justify-content: center;
-}
-.marker span:first-child {
-  align-items: flex-end;
-  border-bottom: 1px solid currentColor;
-  padding-bottom: 2px;
-}
-.marker span:last-child {
-  align-items: flex-start;
-  padding-top: 2px;
+  font-size: 15px;
 }
 .marker.red {
   border-color: var(--red);

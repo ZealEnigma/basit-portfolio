@@ -15,11 +15,47 @@ const STATS = [
   { value: "1 → 9", label: "Destinations added in six months" },
 ];
 
-const ROLE = [
-  ["Product owner", "Requirements, prioritisation and acceptance sign-off on every release."],
-  ["Designer", "Interactive HTML prototypes for every module before a line of production code."],
-  ["Architect", "Data flow, stage logic, permissions and the commission model."],
-  ["Team builder", "Moved delivery in-house by recruiting the engineers who now build it."],
+type Part = "Designed" | "Specified" | "Led" | "Implemented" | "Hired";
+
+const PART_MEANS: [Part, string][] = [
+  ["Designed", "I conceived it and architected how it works."],
+  ["Specified", "I turned it into HTML prototypes and briefs that showed developers exactly what to build."],
+  ["Led", "I coordinated and governed the build, and signed off every release."],
+  ["Implemented", "I configured or built it myself."],
+  ["Hired", "I recruited the people who now build it."],
+];
+
+const OWNERSHIP: { area: string; parts: Part[]; note: string }[] = [
+  { area: "Monday.com operating system", parts: ["Designed", "Implemented"], note: "Every module built from scratch; the blueprint GSP was designed from." },
+  { area: "GSP overall", parts: ["Designed", "Led"], note: "From ideation to the system of record across seven markets." },
+  { area: "Multi-destination pipeline", parts: ["Designed", "Led"], note: "UK and EU flows on one shared core." },
+  { area: "Agent portal and onboarding", parts: ["Designed", "Led"], note: "The B2B side, rolling out across 500+ partners." },
+  { area: "Student portal", parts: ["Designed", "Led"], note: "The B2C side, launching soon." },
+  { area: "Commission engine", parts: ["Designed", "Specified", "Led"], note: "Claims from institutions, payouts to partners." },
+  { area: "Dashboard and data health", parts: ["Designed", "Specified", "Led"], note: "Role-curated reporting across nine destinations." },
+  { area: "Email automation", parts: ["Designed", "Specified", "Led"], note: "Admin-configured stage emails with a delivery log." },
+  { area: "Flow Builder", parts: ["Led"], note: "GSP’s own automation layer, in build." },
+  { area: "Development team", parts: ["Led", "Hired"], note: "Three software engineers, a QA engineer, a DevOps engineer and a designer." },
+];
+
+const PROBLEM = [
+  ["Where it started", "Two countries run on spreadsheets, then on Monday.com. It worked at that size, but every new destination brought its own application flow, visa regime and compliance rules, and the business was about to add seven."],
+  ["Why it was hard", "Two audiences on one record: 500+ partner agents on the B2B side and students applying directly on the B2C side. UK and EU immigration frameworks that differ stage by stage. A sister company sharing the platform. And an external development partner building it."],
+  ["What was at stake", "Commission reconstructed in Excel and email, and growth that would otherwise have meant hiring people to hold the process together rather than building a system that holds it."],
+];
+
+const OUTCOMES = [
+  { value: "200 → 1,500+", label: "Annual enrolments, 2023 to 2026" },
+  { value: "1 → 9", label: "Study destinations live on GSP in six months" },
+  { value: "300,000+", label: "Student records held on one platform" },
+  { value: "In-house", label: "Development moved from an external partner to a team I hired" },
+];
+
+const ADOPTION = [
+  ["Staff", "Counsellors, QA, admissions, visa, compliance and finance work the same record every day, with configuration in settings rather than code."],
+  ["Partners", "500+ agent organisations onboarding through a six-stage, AQF-aligned flow, managing their own student pipelines."],
+  ["Students", "A student portal for direct applicants, launching soon, showing only what the platform actually holds."],
+  ["Checked, not assumed", "Every change ships with rewritten guidance and a named owner, and I come back to check that the old workaround has not returned."],
 ];
 
 const PHASES = [
@@ -74,19 +110,19 @@ const RULES = [
 ];
 
 type Status = "LIVE" | "ROLLING OUT" | "LAUNCHING SOON" | "IN BUILD" | "SPECIFIED";
-const MODULES: { ref: string; title: string; blurb: string; scope: string; status: Status }[] = [
-  { ref: "01", title: "Commission engine", blurb: "Institution claims and partner payouts on one record.", scope: "Commission Claims and Agents and Partners pages; statements; part payments; multi-currency.", status: "IN BUILD" },
-  { ref: "02", title: "Multi-destination pipeline", blurb: "One engine running distinct UK and EU flows.", scope: "CAS route and Final Acceptance Review route; conditional stages that appear only when needed; agent-handled visas waive compliance substages.", status: "LIVE" },
-  { ref: "03", title: "Agent portal and onboarding", blurb: "The B2B side: agents onboard, submit and track applications.", scope: "500+ partner organisations; agents manage their own pipelines; segment filter keeps agent and Study Now leads apart.", status: "ROLLING OUT" },
-  { ref: "04", title: "Student portal", blurb: "The B2C front door: students apply and track directly.", scope: "Both UK and EU pipelines; Course Finder, shortlist and quick apply; action prompts raised by staff; fees inside each application.", status: "LAUNCHING SOON" },
-  { ref: "05", title: "Dashboard and data health", blurb: "Role-curated reporting across nine destinations.", scope: "Ready, Complete and Unassigned per officer; unattributed applications surfaced; deposits and enrolments as separate targets.", status: "SPECIFIED" },
+const MODULES: { ref: string; title: string; blurb: string; scope: string; status: Status; parts?: Part[] }[] = [
+  { ref: "01", title: "Commission engine", blurb: "Institution claims and partner payouts on one record.", scope: "Commission Claims and Agents and Partners pages; statements; part payments; multi-currency.", status: "IN BUILD", parts: ["Designed", "Specified", "Led"] },
+  { ref: "02", title: "Multi-destination pipeline", blurb: "One engine running distinct UK and EU flows.", scope: "CAS route and Final Acceptance Review route; conditional stages that appear only when needed; agent-handled visas waive compliance substages.", status: "LIVE", parts: ["Designed", "Led"] },
+  { ref: "03", title: "Agent portal and onboarding", blurb: "The B2B side: agents onboard, submit and track applications.", scope: "500+ partner organisations; agents manage their own pipelines; segment filter keeps agent and Study Now leads apart.", status: "ROLLING OUT", parts: ["Designed", "Led"] },
+  { ref: "04", title: "Student portal", blurb: "The B2C front door: students apply and track directly.", scope: "Both UK and EU pipelines; Course Finder, shortlist and quick apply; action prompts raised by staff; fees inside each application.", status: "LAUNCHING SOON", parts: ["Designed", "Led"] },
+  { ref: "05", title: "Dashboard and data health", blurb: "Role-curated reporting across nine destinations.", scope: "Ready, Complete and Unassigned per officer; unattributed applications surfaced; deposits and enrolments as separate targets.", status: "SPECIFIED", parts: ["Designed", "Specified", "Led"] },
   { ref: "06", title: "Permissions and stage settings", blurb: "Access set per employee, not per role group.", scope: "Permissions matrix across the pipeline; mandatory fields configured per stage; sensitive actions held by named people.", status: "SPECIFIED" },
   { ref: "07", title: "Activity log", blurb: "One append-only store of every action.", scope: "Staff, agents, students and automation; field, previous and new value on one line; additive and feature-flagged.", status: "SPECIFIED" },
   { ref: "08", title: "Tasks and notifications", blurb: "A board people actually use.", scope: "Today, Tomorrow and Later; assign, snooze and complete from the card; reminders and an 08:30 digest.", status: "SPECIFIED" },
   { ref: "09", title: "Lead attribution and upload-and-match", blurb: "Campaign data out of spreadsheets.", scope: "Any subset of four attribution fields in one pass; rows matched and confirmed before commit; university sheets mapped to GSP courses.", status: "IN BUILD" },
-  { ref: "10", title: "Email automation and inbox", blurb: "Admin-configured stage emails.", scope: "Sender and recipients per template; log of sent and unfired emails; replies threaded onto the record.", status: "IN BUILD" },
+  { ref: "10", title: "Email automation and inbox", blurb: "Admin-configured stage emails.", scope: "Sender and recipients per template; log of sent and unfired emails; replies threaded onto the record.", status: "IN BUILD", parts: ["Designed", "Specified", "Led"] },
   { ref: "11", title: "Help Center and messaging oversight", blurb: "Support content and compliance.", scope: "Videos, articles and FAQs by audience; WhatsApp captured to the record under UK GDPR.", status: "SPECIFIED" },
-  { ref: "12", title: "Flow Builder", blurb: "GSP’s own automation layer, built from scratch.", scope: "Triggers on stage and field changes; actions across email, tasks and records; Claude steps behind a confidence gate and a human review queue.", status: "IN BUILD" },
+  { ref: "12", title: "Flow Builder", blurb: "GSP’s own automation layer, built from scratch.", scope: "Triggers on stage and field changes; actions across email, tasks and records; Claude steps behind a confidence gate and a human review queue.", status: "IN BUILD", parts: ["Led"] },
 ];
 const STATUS_COLOUR: Record<Status, string> = {
   LIVE: "var(--ink)",
@@ -103,6 +139,18 @@ const METHOD = [
   ["Write the brief", "Data points, queries and acceptance checks for the developers."],
   ["Sign off and measure", "Accept the release, then check months later that it held."],
 ];
+
+function Parts({ parts }: { parts: Part[] }) {
+  return (
+    <span style={{ display: "inline-flex", flexWrap: "wrap", gap: 6 }}>
+      {parts.map((p) => (
+        <span key={p} className="stamp" style={{ transform: "none", color: p === "Led" || p === "Hired" ? "var(--red-text)" : "var(--ink)" }}>
+          {p.toUpperCase()}
+        </span>
+      ))}
+    </span>
+  );
+}
 
 function DetailIntro({ title, body }: { title: string; body: string }) {
   return (
@@ -163,24 +211,67 @@ export default function GspPage() {
         </div>
       </section>
 
-      {/* Role */}
+      {/* The problem */}
       <section style={{ ...col, gap: 24 }}>
-        <SectionHead n={1} title="My role" />
-        <div className="ruled cols-240">
-          {ROLE.map(([t, l]) => (
-            <div key={t} style={{ padding: 20, ...col, gap: 8 }}>
+        <SectionHead n={1} title="The problem" />
+        <div className="ruled cols-300">
+          {PROBLEM.map(([t, l]) => (
+            <div key={t} style={{ padding: 22, ...col, gap: 10 }}>
               <span className="tag" style={{ fontWeight: 600 }}>
                 {t}
               </span>
-              <span style={{ fontSize: 15, lineHeight: 1.55 }}>{l}</span>
+              <span style={{ fontSize: 16, lineHeight: 1.6 }}>{l}</span>
             </div>
           ))}
         </div>
       </section>
 
+      {/* My part */}
+      <section id="my-part" style={{ ...col, gap: 24 }}>
+        <SectionHead n={2} title="My part" red />
+        <p style={{ margin: 0, fontSize: "clamp(18px, 1.8vw, 21px)", lineHeight: 1.55, maxWidth: 860 }}>
+          Developers wrote GSP’s code. I designed it, specified it and led the people who built it, and this is precise
+          about which of those I did where. Where I designed and specified, developers built from HTML prototypes I made, so
+          the screens on this page started as my prototypes.
+        </p>
+        <div className="ruled cols-190">
+          {PART_MEANS.map(([p, l]) => (
+            <div key={p} style={{ padding: 16, ...col, gap: 8 }}>
+              <Parts parts={[p]} />
+              <span style={{ fontSize: 14, lineHeight: 1.5 }}>{l}</span>
+            </div>
+          ))}
+        </div>
+        <div className="table-wrap">
+          <table style={{ minWidth: 640 }}>
+            <thead>
+              <tr>
+                <th style={{ width: 260 }}>AREA</th>
+                <th style={{ width: 260 }}>MY PART</th>
+                <th>WHAT IT IS</th>
+              </tr>
+            </thead>
+            <tbody>
+              {OWNERSHIP.map((o) => (
+                <tr key={o.area}>
+                  <td>
+                    <b style={{ fontSize: 15 }}>{o.area}</b>
+                  </td>
+                  <td>
+                    <Parts parts={o.parts} />
+                  </td>
+                  <td style={{ fontSize: 14, lineHeight: 1.55 }}>{o.note}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
       {/* Commission */}
       <section id="commission" style={{ ...col, gap: 24 }}>
-        <SectionHead n={2} title="Commission" red stamp="GSP module in build" />
+        <SectionHead n={3} title="Commission" red stamp="GSP module in build" />
+        <Parts parts={["Designed", "Specified", "Led"]} />
         <div style={{ border: "2px solid var(--red)", background: "var(--paper)", padding: "clamp(20px, 3vw, 36px)", ...col, gap: 28 }}>
           <DetailIntro
             title="Money in from institutions. Money out to partners. One source of truth."
@@ -236,7 +327,8 @@ export default function GspPage() {
 
       {/* Student portal */}
       <section id="portal" style={{ ...col, gap: 24 }}>
-        <SectionHead n={3} title="Student portal" stamp="Launching soon" />
+        <SectionHead n={4} title="Student portal" stamp="Launching soon" />
+        <Parts parts={["Designed", "Led"]} />
         <DetailIntro
           title="The B2C front door, built on the same record staff and agents use."
           body="Students see exactly what the CRM knows: every application across the UK and EU pipelines on its own stepper, the actions their team has asked of them, and updates from institutions kept separate from tasks. Designed from a live sweep of GSP so the portal never shows a stage or a status the platform does not hold."
@@ -250,7 +342,8 @@ export default function GspPage() {
 
       {/* Email automation */}
       <section id="email" style={{ ...col, gap: 24 }}>
-        <SectionHead n={4} title="Email automation" stamp="In build" />
+        <SectionHead n={5} title="Email automation" stamp="In build" />
+        <Parts parts={["Designed", "Specified", "Led"]} />
         <DetailIntro
           title="From hard-coded rules to emails an admin can configure, and audit."
           body="Every stage email used to live in code. Now an admin builds it inside GSP’s existing Add Template steps: what it says, the moment it fires, who receives it and from which sender. Before saving, the template states in one plain sentence what it will do and is tested against sample applications, and a delivery log records what was sent, what fell back, and what did not fire and why."
@@ -262,16 +355,37 @@ export default function GspPage() {
         </div>
       </section>
 
+      {/* Adoption and outcome */}
+      <section style={{ ...col, gap: 24 }}>
+        <SectionHead n={6} title="Adoption and outcome" />
+        <div className="ruled cols-240">
+          {ADOPTION.map(([t, l]) => (
+            <div key={t} style={{ padding: 20, ...col, gap: 8 }}>
+              <span className="tag" style={{ fontWeight: 600 }}>
+                {t}
+              </span>
+              <span style={{ fontSize: 15, lineHeight: 1.55 }}>{l}</span>
+            </div>
+          ))}
+        </div>
+        <div className="ruled cols-240">
+          {OUTCOMES.map((o) => (
+            <Measure key={o.label} value={o.value} label={o.label} />
+          ))}
+        </div>
+      </section>
+
       {/* Modules */}
       <section style={{ ...col, gap: 24 }}>
-        <SectionHead n={5} title="Every module" />
+        <SectionHead n={7} title="Every module" />
         <div className="table-wrap">
-          <table style={{ minWidth: 760 }}>
+          <table style={{ minWidth: 900 }}>
             <thead>
               <tr>
                 <th style={{ width: 60 }}>REF</th>
-                <th style={{ width: 300 }}>MODULE</th>
+                <th style={{ width: 280 }}>MODULE</th>
                 <th>SCOPE</th>
+                <th style={{ width: 200 }}>MY PART</th>
                 <th style={{ width: 150 }}>STATUS</th>
               </tr>
             </thead>
@@ -286,6 +400,7 @@ export default function GspPage() {
                     <div style={{ fontSize: 14, lineHeight: 1.5, color: "#2e2e2b", marginTop: 4 }}>{m.blurb}</div>
                   </td>
                   <td style={{ fontSize: 14, lineHeight: 1.6 }}>{m.scope}</td>
+                  <td>{m.parts ? <Parts parts={m.parts} /> : null}</td>
                   <td>
                     <span className="stamp" style={{ color: STATUS_COLOUR[m.status] }}>
                       {m.status}
@@ -300,7 +415,7 @@ export default function GspPage() {
 
       {/* Method */}
       <section style={{ ...col, gap: 24 }}>
-        <SectionHead n={6} title="How each module gets made" />
+        <SectionHead n={8} title="How each module gets made" />
         <ol className="ruled cols-190" style={{ margin: 0, padding: 0, listStyle: "none" }}>
           {METHOD.map(([t, l], i) => (
             <li key={t} style={{ padding: 18, ...col, gap: 8 }}>

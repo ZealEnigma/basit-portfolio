@@ -24,7 +24,7 @@ export default async function Image() {
           flexDirection: "column",
           alignItems: "flex-start",
           justifyContent: "center",
-          background: "#101e33",
+          background: "#fafaf7", border: "16px solid #111110",
           padding: "0 96px",
         }}
       >
@@ -32,7 +32,7 @@ export default async function Image() {
           style={{
             fontFamily: "Instrument Serif",
             fontSize: 96,
-            color: "#fdfcfa",
+            color: "#111110",
             lineHeight: 1.05,
           }}
         >
@@ -42,11 +42,11 @@ export default async function Image() {
           style={{
             fontFamily: "Instrument Serif",
             fontSize: 40,
-            color: "#d98b6a",
+            color: "#b21e17",
             marginTop: 28,
           }}
         >
-          Operations and Delivery Leader
+          Operations, Business Systems and Transformation
         </div>
       </div>
     ),

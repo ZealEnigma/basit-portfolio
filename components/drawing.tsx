@@ -59,7 +59,7 @@ export function Fig({
 export function Measure({ value, label }: { value: string; label: string }) {
   return (
     <div style={{ padding: 20, display: "flex", flexDirection: "column", gap: 10 }}>
-      <span className="wide" style={{ fontWeight: 800, fontSize: "clamp(30px, 2.6vw, 40px)", lineHeight: 1, letterSpacing: "-0.02em" }}>
+      <span className="wide" style={{ fontWeight: 800, fontSize: "clamp(28px, 2.4vw, 38px)", lineHeight: 1, letterSpacing: "-0.02em" }}>
         {value}
       </span>
       <span className="dim" aria-hidden="true">

@@ -2,22 +2,30 @@ import Link from "next/link";
 import { Fig, Measure, SectionHead, Sheet } from "@/components/drawing";
 
 const INDEX = [
+  { label: "What I do", code: "A-010", href: "#what" },
   { label: "GSP", code: "S-300", href: "/gsp", hot: true },
   { label: "Work", code: "S-400", href: "#work" },
   { label: "How I work", code: "A-200", href: "#principles" },
   { label: "Automation and AI", code: "M-500", href: "#automation" },
-  { label: "About", code: "A-100", href: "#about" },
   { label: "Writing", code: "D-700", href: "#writing" },
   { label: "Work with me", code: "C-800", href: "#contact" },
 ];
 
 const FIGURES = [
-  { value: "7.5×", label: "Enrolments, 200 to 1,500+" },
+  { value: "200 → 1,500+", label: "Annual enrolments, 2023 to 2026" },
+  { value: "2 → 7", label: "Countries running on the systems, 2023 to 2026" },
+  { value: "1 → 9", label: "Study destinations on GSP, in six months" },
   { value: "£500k+", label: "Technology and operations budget owned" },
-  { value: "20", label: "Team across engineering, data, support" },
-  { value: "4", label: "Enterprise migrations delivered" },
-  { value: "9", label: "Study destinations on one platform" },
-  { value: "500+", label: "Partner agents trained and onboarded" },
+  { value: "20", label: "Team led, incl. engineers and analysts in roles that did not exist" },
+  { value: "4", label: "Enterprise migrations, Excel to Monday.com to GSP" },
+];
+
+const CAPABILITIES = [
+  { n: "01", title: "Transformation", line: "Turning fragmented ways of working into structured operating models: intake, prioritisation, governance and reporting." },
+  { n: "02", title: "Business systems", line: "Designing and implementing the systems that connect processes, information and people across a business." },
+  { n: "03", title: "Platforms and product delivery", line: "Translating operational requirements into internal products, from prototype and specification to release." },
+  { n: "04", title: "Automation and AI", line: "Using automation and AI to add capacity and improve workflows, with controls that keep people in charge." },
+  { n: "05", title: "Adoption and change", line: "Making sure systems become part of how people actually work, and checking months later that they held." },
 ];
 
 const GSP_MODULES = [
@@ -145,9 +153,9 @@ const DOORS = [
   { n: "02", title: "Advisory and consulting", line: "Operating models, platform builds and migrations, CRM and commission design, intake and governance.", subject: "Advisory" },
   { n: "03", title: "Systems and automation builds", line: "Internal tools, portals, dashboards and automation, from prototype to production.", subject: "Build" },
   { n: "04", title: "Speaking and writing", line: "Talks, panels, podcasts and guest writing on operations, systems and adopting AI.", subject: "Speaking or writing" },
+  { n: "05", title: "Something else", line: "Fractional leadership, a partnership, a venture or a problem that does not fit a box.", subject: "Conversation" },
 ];
 
-const CERTS = ["MBA", "PMP", "ITIL 4", "CSM", "AI for Business, Wharton", "Lean Six Sigma White Belt", "APM Member", "Monday.com Core"];
 
 const WRITING = [
   { date: "10 Aug 2026", title: "The Eureka Moment Comes Later" },
@@ -178,9 +186,9 @@ export default function Home() {
       </header>
 
       {/* Hero */}
-      <section id="top" style={{ display: "flex", flexWrap: "wrap", gap: 48, alignItems: "flex-start" }}>
-        <div style={{ flex: "999 1 560px", minWidth: 0, display: "flex", flexDirection: "column", gap: 28 }}>
-          <div className="tag">Sheet A-001 · General arrangement</div>
+      <section id="top" style={{ display: "flex", flexWrap: "wrap", gap: 56, alignItems: "flex-start", paddingTop: "clamp(8px, 3vw, 40px)" }}>
+        <div style={{ flex: "999 1 560px", minWidth: 0, display: "flex", flexDirection: "column", gap: 32 }}>
+          <div className="tag">Transformation · Systems · Operations</div>
           <h1
             className="wide"
             style={{ margin: 0, fontWeight: 800, fontSize: "clamp(52px, 8.6vw, 132px)", lineHeight: 0.9, letterSpacing: "-0.025em", textTransform: "uppercase" }}
@@ -188,8 +196,9 @@ export default function Home() {
             I build systems that <span className="redline">scale.</span>
           </h1>
           <p style={{ margin: 0, fontSize: "clamp(20px, 2vw, 26px)", lineHeight: 1.4, maxWidth: 660 }}>
-            Then I stay until people actually use them. Trained as an architect in Nigeria and Germany; now I draw
-            organisations, and build the platforms they run on.
+            Then I stay until people actually use them. I work where transformation, operations, technology and
+            organisational change meet; trained as an architect, I now design how organisations work and build the
+            platforms they run on.
           </p>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 12 }}>
             <a href="#work" className="btn solid">
@@ -201,11 +210,6 @@ export default function Home() {
             <a href="/Basit_Azeez_CV.pdf" download className="btn">
               Download CV
             </a>
-          </div>
-          <div className="mono" style={{ borderLeft: "2px solid var(--red)", paddingLeft: 12, color: "var(--red-text)", fontSize: 12, lineHeight: 1.6, maxWidth: 460 }}>
-            REV 1: TWO COUNTRIES ON SPREADSHEETS.
-            <br />
-            REV 4: SEVEN COUNTRIES, 1,500+ ENROLMENTS, ONE PLATFORM.
           </div>
         </div>
         <figure style={{ flex: "1 1 300px", maxWidth: 380, margin: 0 }}>
@@ -230,15 +234,36 @@ export default function Home() {
       </section>
 
       {/* Key figures */}
-      <section aria-label="Key figures" className="ruled cols-190" style={{ marginTop: -40 }}>
+      <section aria-label="Key figures" className="ruled cols-340" style={{ marginTop: -24 }}>
         {FIGURES.map((f) => (
           <Measure key={f.label} value={f.value} label={f.label} />
         ))}
       </section>
 
+      {/* What I do */}
+      <section id="what" style={{ display: "flex", flexDirection: "column", gap: 28 }}>
+        <SectionHead n={1} code="A-010" title="What I do" />
+        <div className="ruled cols-240">
+          {CAPABILITIES.map((c) => (
+            <div key={c.n} style={{ padding: 22, display: "flex", flexDirection: "column", gap: 10 }}>
+              <span className="mono" style={{ fontSize: 12, fontWeight: 600, color: "var(--red-text)" }}>
+                {c.n}
+              </span>
+              <b className="wide" style={{ fontStretch: "112%", fontSize: 20, lineHeight: 1.2 }}>
+                {c.title}
+              </b>
+              <span style={{ fontSize: 15, lineHeight: 1.55, color: "#2e2e2b" }}>{c.line}</span>
+            </div>
+          ))}
+        </div>
+        <p className="caption" style={{ margin: 0, color: "var(--muted)" }}>
+          The map. The evidence follows: problem, process, people, system, implementation, adoption, scale.
+        </p>
+      </section>
+
       {/* GSP */}
       <section id="gsp" style={{ display: "flex", flexDirection: "column", gap: 28 }}>
-        <SectionHead n={1} code="S-300" title="The flagship: GSP" red />
+        <SectionHead n={2} code="S-300" title="The flagship: GSP" red />
         <div style={{ border: "2px solid var(--ink)", background: "var(--paper)", display: "flex", flexWrap: "wrap" }}>
           <div style={{ flex: "1 1 440px", padding: "clamp(22px, 3vw, 40px)", display: "flex", flexDirection: "column", gap: 20, borderRight: "1px solid var(--ink)" }}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -283,9 +308,12 @@ export default function Home() {
 
       {/* Work */}
       <section id="work" style={{ display: "flex", flexDirection: "column", gap: 28 }}>
-        <SectionHead n={2} code="S-400" title="What I have built" />
+        <SectionHead n={3} code="S-400" title="What I have built" />
+        <div className="tag" style={{ fontWeight: 600, marginBottom: -12 }}>
+          Professional work
+        </div>
         <div className="ruled cols-300">
-          {WORKS.map((w) => (
+          {WORKS.filter((w) => w.kind !== "Personal").map((w) => (
             <article key={w.sheet} style={{ display: "flex", flexDirection: "column" }}>
               <div
                 className="hatch"
@@ -323,11 +351,35 @@ export default function Home() {
             </article>
           ))}
         </div>
+
+        <div className="tag" style={{ fontWeight: 600, marginTop: 12, marginBottom: -12 }}>
+          Independent builds
+        </div>
+        <div className="ruled cols-340">
+          {WORKS.filter((w) => w.kind === "Personal").map((w) => (
+            <article key={w.sheet} style={{ display: "flex", gap: 18, padding: 14, alignItems: "stretch" }}>
+              <div className="hatch" style={{ flex: "0 0 104px", height: 170, border: "1px solid var(--ink)", display: "flex", alignItems: "center", justifyContent: "center", padding: "10px 0" }}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={w.img} alt={`${w.title} screen`} loading="lazy" className="shot" tabIndex={0} style={{ height: "100%", width: "auto", display: "block", border: "1.5px solid var(--ink)", borderRadius: 10 }} />
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 8, minWidth: 0 }}>
+                <div className="caption" style={{ display: "flex", justifyContent: "space-between", gap: 10 }}>
+                  <span>{w.sheet}</span>
+                  <span className="stamp red">{w.status}</span>
+                </div>
+                <h3 className="wide" style={{ margin: 0, fontWeight: 700, fontSize: 19, fontStretch: "112%" }}>
+                  {w.title}
+                </h3>
+                <p style={{ margin: 0, fontSize: 14, lineHeight: 1.5, color: "#2e2e2b" }}>{w.blurb}</p>
+              </div>
+            </article>
+          ))}
+        </div>
       </section>
 
       {/* Principles */}
       <section id="principles" style={{ display: "flex", flexDirection: "column", gap: 28 }}>
-        <SectionHead n={3} code="A-200" title="How I work" />
+        <SectionHead n={4} code="A-200" title="How I work" />
         <div className="ruled cols-380">
           {PRINCIPLES.map(([t, line], i) => (
             <div key={t} style={{ padding: 22, display: "flex", gap: 20 }}>
@@ -353,7 +405,7 @@ export default function Home() {
 
       {/* Automation and AI */}
       <section id="automation" style={{ display: "flex", flexDirection: "column", gap: 28 }}>
-        <SectionHead n={4} code="M-500" title="Automation and AI" />
+        <SectionHead n={5} code="M-500" title="Automation and AI" />
         <div className="split">
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(220px, 100%), 1fr))", gap: 24, alignContent: "start" }}>
             {AUTOMATION.map(([t, body]) => (
@@ -409,7 +461,7 @@ export default function Home() {
 
       {/* About */}
       <section id="about" style={{ display: "flex", flexDirection: "column", gap: 28 }}>
-        <SectionHead n={5} code="A-100" title="Two countries to seven" />
+        <SectionHead n={6} code="A-100" title="Two countries to seven" />
         <div className="split">
           <div style={{ display: "flex", flexDirection: "column", gap: 18, fontSize: 18, lineHeight: 1.65 }}>
             <p className="wide" style={{ margin: 0, fontStretch: "112%", fontWeight: 600, fontSize: 24, lineHeight: 1.35 }}>
@@ -475,55 +527,35 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Toolkit, certifications, writing */}
-      <section className="split">
-        <div style={{ display: "flex", flexDirection: "column", gap: 22 }}>
-          <div>
-            <div className="tag" style={{ fontWeight: 600, borderBottom: "1.5px solid var(--ink)", paddingBottom: 8, marginBottom: 10 }}>
-              Toolkit
-            </div>
-            <p style={{ margin: 0, fontSize: 16, lineHeight: 1.75 }}>
-              <b>Platforms</b> GSP, Monday.com, Microsoft 365, Element451, BambooHR, Jira. <b>Automation and AI</b>{" "}
-              Claude API, Claude Code, MCP, Zapier, n8n, Make, Power Automate. <b>Data</b> Power BI, SQL, Python.{" "}
-              <b>Build</b> React, Next.js, TypeScript, Supabase, Vercel.
-            </p>
-          </div>
-          <div>
-            <div className="tag" style={{ fontWeight: 600, borderBottom: "1.5px solid var(--ink)", paddingBottom: 8, marginBottom: 10 }}>
-              Certifications
-            </div>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-              {CERTS.map((c) => (
-                <span key={c} style={{ border: "1.5px solid var(--ink)", padding: "6px 12px", fontWeight: 700, fontSize: 14 }}>
-                  {c}
-                </span>
-              ))}
-            </div>
-          </div>
+      {/* Writing */}
+      <section id="writing" style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+        <div className="tag" style={{ fontWeight: 600, borderBottom: "1.5px solid var(--ink)", paddingBottom: 8, display: "flex", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
+          <span>How I think · writing on Substack</span>
+          <a href={SUBSTACK} style={{ color: "var(--red-text)" }}>
+            All writing →
+          </a>
         </div>
-        <div id="writing">
-          <div className="tag" style={{ fontWeight: 600, borderBottom: "1.5px solid var(--ink)", paddingBottom: 8 }}>
-            Writing · Substack
-          </div>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(260px, 100%), 1fr))", gap: "0 32px" }}>
           {WRITING.map((w) => (
-            <a key={w.title} href={SUBSTACK} style={{ display: "block", padding: "14px 0", borderBottom: "1px solid var(--hair)" }}>
+            <a key={w.title} href={SUBSTACK} style={{ display: "block", padding: "12px 0", borderBottom: "1px solid var(--hair)" }}>
               <span className="caption" style={{ color: "var(--muted)" }}>
                 {w.date}
               </span>
-              <span className="wide" style={{ display: "block", fontStretch: "112%", fontWeight: 700, fontSize: 20, marginTop: 4 }}>
+              <span className="wide" style={{ display: "block", fontStretch: "112%", fontWeight: 700, fontSize: 19, marginTop: 4 }}>
                 {w.title}
               </span>
             </a>
           ))}
-          <a href={SUBSTACK} className="mono" style={{ display: "inline-flex", alignItems: "center", minHeight: 44, fontSize: 13, fontWeight: 600, color: "var(--red-text)" }}>
-            ALL WRITING ON SUBSTACK →
-          </a>
         </div>
       </section>
 
       {/* Work with me */}
       <section id="contact" style={{ display: "flex", flexDirection: "column", gap: 28 }}>
-        <SectionHead n={6} code="C-800" title="Work with me" red />
+        <SectionHead n={7} code="C-800" title="Work with me" red />
+        <p style={{ margin: 0, fontSize: "clamp(18px, 1.8vw, 22px)", lineHeight: 1.5, maxWidth: 820 }}>
+          You do not need a vacancy to get in touch. If you are building something, fixing something, scaling something
+          or working out what comes next, I would like to hear about it.
+        </p>
         <div className="ruled cols-240">
           {DOORS.map((d) => (
             <a
